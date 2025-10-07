@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Premium Furniture Design System - Bēige & Oak */
+
+@layer base {
+  :root {
+    /* Warm Premium Palette */
+    --background: 30 25% 96%;        /* Warm Beige #F5EEE6 */
+    --foreground: 25 30% 20%;         /* Dark Walnut #4A372B */
+
+    --card: 30 20% 98%;
+    --card-foreground: 25 30% 20%;
+
+    --popover: 30 25% 96%;
+    --popover-foreground: 25 30% 20%;
+
+    --primary: 25 25% 33%;            /* Rich Brown #6B4F3A */
+    --primary-foreground: 30 25% 96%;
+
+    --secondary: 30 20% 85%;          /* Sand #E7D9C8 */
+    --secondary-foreground: 25 30% 20%;
+
+    --muted: 30 15% 90%;
+    --muted-foreground: 25 15% 45%;
+
+    --accent: 40 60% 65%;             /* Soft Gold */
+    --accent-foreground: 25 30% 20%;
+
+    --forest: 150 35% 30%;            /* Deep Forest Green for CTA hover */
+    --forest-foreground: 30 25% 96%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 30 25% 96%;
+
+    --border: 30 15% 88%;
+    --input: 30 15% 88%;
+    --ring: 25 25% 33%;
+
+    --radius: 0.75rem;                /* 12px rounded corners */
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  /* Premium Button Variants */
+  .btn-premium {
+    @apply bg-primary text-primary-foreground hover:bg-forest hover:bg-opacity-90 
+           transition-all duration-300 px-8 py-4 rounded-xl font-medium
+           shadow-sm hover:shadow-lg;
+  }
+
+  .btn-outline-premium {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground
+           transition-all duration-300 px-8 py-4 rounded-xl font-medium;
+  }
+
+  .btn-ghost-premium {
+    @apply text-primary hover:bg-secondary/50 transition-all duration-300 
+           px-6 py-3 rounded-lg font-medium;
+  }
+
+  /* Premium Card Styles */
+  .card-premium {
+    @apply bg-card rounded-2xl shadow-sm hover:shadow-xl 
+           transition-all duration-500 overflow-hidden;
+  }
+
+  /* Text Gradient */
+  .text-gradient-premium {
+    @apply bg-gradient-to-r from-primary via-accent to-primary 
+           bg-clip-text text-transparent;
+  }
+
+  /* Premium Section Spacing */
+  .section-padding {
+    @apply py-16 md:py-24 lg:py-32 px-4 md:px-8 lg:px-12;
+  }
+}
+
+@layer utilities {
+  /* Premium Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.5s ease-out forwards;
+  }
+
+  /* Premium Hover Effects */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-2;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-2xl;
+  }
+}
