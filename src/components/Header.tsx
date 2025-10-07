@@ -25,7 +25,7 @@ const Header = async () => {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <h1 className="text-2xl md:text-3xl font-serif font-semibold text-primary">
-              Bēige & Oak
+              Dr Backfit
             </h1>
           </Link>
 
