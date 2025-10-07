@@ -35,7 +35,7 @@ export default function About() {
                 Made by Hand, Loved for Years
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Bēige & Oak was founded with a simple belief: furniture should be more than just functional. 
+                Dr Backfit was founded with a simple belief: furniture should be more than just functional. 
                 It should tell a story, reflect craftsmanship, and stand the test of time.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">

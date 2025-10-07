@@ -8,7 +8,7 @@ import { Providers } from "@/app/providers";
 import "./globals.css";
 
 export const metadata = {
-  title: "Bēige & Oak Atelier - Premium Handcrafted Furniture",
+  title: "Dr Backfit Atelier - Premium Handcrafted Furniture",
   description:
     "Premium furniture crafted by master artisans. Each piece tells a story of dedication, quality materials, and timeless design.",
 };

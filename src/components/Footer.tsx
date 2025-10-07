@@ -13,7 +13,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="space-y-4">
             <h3 className="text-2xl font-serif font-semibold text-primary">
-              Bēige & Oak
+              Dr Backfit
             </h3>
             <p className="text-sm text-muted-foreground italic">
               Made by hand. Loved for years.
@@ -132,7 +132,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Bēige & Oak. All rights reserved.
+            © {currentYear} Dr Backfit. All rights reserved.
           </p>
           <div className="flex space-x-6 text-sm">
             <Link

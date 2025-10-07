@@ -45,7 +45,7 @@ export default function SignIn() {
             Welcome Back
           </h1>
           <p className="text-muted-foreground">
-            Sign in to your Bēige & Oak account
+            Sign in to your Dr Backfit account
           </p>
         </div>
 

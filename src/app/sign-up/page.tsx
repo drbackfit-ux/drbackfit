@@ -51,7 +51,7 @@ export default function SignUp() {
         firstName: formData.firstName,
         lastName: formData.lastName
       });
-      toast.success("Account created successfully! Welcome to Bēige & Oak.");
+      toast.success("Account created successfully! Welcome to Dr Backfit.");
       router.push("/account");
     } catch (error) {
       toast.error("Failed to create account");
@@ -66,7 +66,7 @@ export default function SignUp() {
             Create Account
           </h1>
           <p className="text-muted-foreground">
-            Join Bēige & Oak for exclusive benefits
+            Join Dr Backfit for exclusive benefits
           </p>
         </div>
 

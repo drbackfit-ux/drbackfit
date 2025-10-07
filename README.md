@@ -1,4 +1,4 @@
-# Bēige & Oak Atelier - Premium Handcrafted Furniture
+# Dr Backfit Atelier - Premium Handcrafted Furniture
 
 A Next.js e-commerce application for premium handcrafted furniture.
 

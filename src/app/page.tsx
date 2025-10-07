@@ -78,7 +78,7 @@ export default async function Home() {
                 Craftsmanship That Speaks
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                For over two decades, Bēige & Oak has been creating furniture
+                For over two decades, Dr Backfit has been creating furniture
                 that transcends trends. Our workshop combines traditional
                 joinery techniques with modern design sensibilities, ensuring
                 each piece is both beautiful and built to last.
@@ -124,7 +124,7 @@ export default async function Home() {
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Our most loved pieces. Shop customer favorites and see why they
-              choose Bēige & Oak.
+              choose Dr Backfit.
             </p>
           </div>
 
