@@ -19,7 +19,7 @@ const Header = async () => {
   const { itemCount } = await getCartData();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
+    <header className="sticky top-0 z-50 w-full bg-navbar-bg backdrop-blur supports-[backdrop-filter]:bg-navbar-bg/95 border-b border-border">
       <div className="container mx-auto">
         <div className="flex h-20 items-center justify-between px-4">
           {/* Logo */}

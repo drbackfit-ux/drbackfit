@@ -255,12 +255,7 @@ export default async function Home() {
             <Button asChild size="lg" variant="secondary" className="text-base">
               <Link href="/showroom">Book Showroom Visit</Link>
             </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="text-base border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-            >
+            <Button asChild size="lg" className="text-base btn-premium">
               <Link href="/custom-order">Start Custom Project</Link>
             </Button>
           </div>

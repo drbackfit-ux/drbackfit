@@ -2,7 +2,12 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -14,8 +19,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ['Playfair Display', 'Georgia', 'serif'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ["Playfair Display", "Georgia", "serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -55,6 +60,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Brand color tokens
+        "body-text": "hsl(var(--body-text))",
+        "footer-text": "hsl(var(--footer-text))",
+        "primary-button": {
+          DEFAULT: "hsl(var(--primary-button))",
+          hover: "hsl(var(--primary-button-hover))",
+        },
+        "navbar-bg": "hsl(var(--navbar-bg))",
+        "footer-bg": "hsl(var(--footer-bg))",
+        "page-bg": "hsl(var(--page-bg))",
       },
       borderRadius: {
         lg: "var(--radius)",
