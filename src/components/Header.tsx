@@ -3,7 +3,7 @@ import { Search, Heart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MobileMenu from "@/components/MobileMenu";
 import CartIcon from "@/components/CartIcon";
-import { getCartData } from "@/actions/cart.actions";
+import { Suspense } from "react";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -14,9 +14,14 @@ const navLinks = [
   { name: "Contact", path: "/contact" },
 ];
 
-const Header = async () => {
-  // Get cart data on the server
+// Separate component for cart data that can be dynamically rendered
+async function CartIconWithData() {
+  const { getCartData } = await import("@/actions/cart.actions");
   const { itemCount } = await getCartData();
+  return <CartIcon itemCount={itemCount} />;
+}
+
+const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-navbar-bg backdrop-blur supports-[backdrop-filter]:bg-navbar-bg/95 border-b border-border">
@@ -70,7 +75,9 @@ const Header = async () => {
               </Link>
             </Button>
 
-            <CartIcon itemCount={itemCount} />
+            <Suspense fallback={<CartIcon itemCount={0} />}>
+              <CartIconWithData />
+            </Suspense>
             <MobileMenu navLinks={navLinks} />
           </div>
         </div>

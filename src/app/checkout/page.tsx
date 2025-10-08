@@ -1,5 +1,8 @@
 "use client";
 
+// This page uses client-side cart context which depends on cookies
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";

@@ -1,5 +1,8 @@
 "use client";
 
+// This page uses client-side cart context which depends on cookies
+export const dynamic = "force-dynamic";
+
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
