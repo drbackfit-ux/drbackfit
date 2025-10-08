@@ -22,7 +22,6 @@ async function CartIconWithData() {
 }
 
 const Header = () => {
-
   return (
     <header className="sticky top-0 z-50 w-full bg-navbar-bg backdrop-blur supports-[backdrop-filter]:bg-navbar-bg/95 border-b border-border">
       <div className="container mx-auto">

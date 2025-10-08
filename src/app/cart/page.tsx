@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export default function Cart() {
-  const { items, updateQuantity, removeFromCart, getTotal, getItemCount } = useCart();
+  const { items, updateQuantity, removeFromCart, getTotal, getItemCount } =
+    useCart();
 
   if (items.length === 0) {
     return (
@@ -40,7 +41,8 @@ export default function Cart() {
             Shopping Cart
           </h1>
           <p className="text-lg text-muted-foreground">
-            {getItemCount()} {getItemCount() === 1 ? 'item' : 'items'} in your cart
+            {getItemCount()} {getItemCount() === 1 ? "item" : "items"} in your
+            cart
           </p>
         </div>
       </div>
@@ -87,7 +89,9 @@ export default function Cart() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity - 1)
+                        }
                         disabled={item.quantity <= 1}
                       >
                         <Minus className="h-4 w-4" />
@@ -98,7 +102,9 @@ export default function Cart() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity + 1)
+                        }
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -134,7 +140,9 @@ export default function Cart() {
               <div className="border-t border-border pt-4">
                 <div className="flex justify-between text-xl font-bold">
                   <span>Total</span>
-                  <span className="text-primary">${getTotal().toLocaleString()}</span>
+                  <span className="text-primary">
+                    ${getTotal().toLocaleString()}
+                  </span>
                 </div>
               </div>
 

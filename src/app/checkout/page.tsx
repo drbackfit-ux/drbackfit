@@ -29,19 +29,21 @@ export default function Checkout() {
     cardNumber: "",
     cardName: "",
     expiry: "",
-    cvv: ""
+    cvv: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Order placed successfully! You'll receive a confirmation email shortly.");
+    toast.success(
+      "Order placed successfully! You'll receive a confirmation email shortly."
+    );
     clearCart();
     router.push("/");
   };
@@ -63,9 +65,7 @@ export default function Checkout() {
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
             Checkout
           </h1>
-          <p className="text-lg text-muted-foreground">
-            Complete your order
-          </p>
+          <p className="text-lg text-muted-foreground">Complete your order</p>
         </div>
       </div>
 
