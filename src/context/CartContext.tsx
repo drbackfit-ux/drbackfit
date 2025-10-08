@@ -1,9 +1,11 @@
 "use client";
 
 import "client-only";
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { toast } from "sonner";
 import type { CartItem } from "@/models/Cart";
+
+const CART_STORAGE_KEY = "shopping_cart";
 
 interface CartContextType {
   items: CartItem[];
@@ -25,6 +27,31 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(CART_STORAGE_KEY);
+      if (stored) {
+        setItems(JSON.parse(stored));
+      }
+    } catch (error) {
+      console.error("Failed to load cart from localStorage:", error);
+    }
+    setIsHydrated(true);
+  }, []);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    if (isHydrated) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+      } catch (error) {
+        console.error("Failed to save cart to localStorage:", error);
+      }
+    }
+  }, [items, isHydrated]);
 
   const addToCart = (product: {
     id: string;

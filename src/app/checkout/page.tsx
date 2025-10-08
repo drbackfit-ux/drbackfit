@@ -48,8 +48,14 @@ export default function Checkout() {
     router.push("/");
   };
 
-  if (items.length === 0) {
+  // Redirect to cart if empty (client-side only)
+  if (typeof window !== "undefined" && items.length === 0) {
     router.push("/cart");
+    return null;
+  }
+
+  // Show loading state during SSR or when cart is empty
+  if (items.length === 0) {
     return null;
   }
 

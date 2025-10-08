@@ -2,8 +2,7 @@ import Link from "next/link";
 import { Search, Heart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MobileMenu from "@/components/MobileMenu";
-import CartIcon from "@/components/CartIcon";
-import { Suspense } from "react";
+import CartIconClient from "@/components/CartIconClient";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -13,13 +12,6 @@ const navLinks = [
   { name: "Showroom", path: "/showroom" },
   { name: "Contact", path: "/contact" },
 ];
-
-// Separate component for cart data that can be dynamically rendered
-async function CartIconWithData() {
-  const { getCartData } = await import("@/actions/cart.actions");
-  const { itemCount } = await getCartData();
-  return <CartIcon itemCount={itemCount} />;
-}
 
 const Header = () => {
   return (
@@ -74,9 +66,7 @@ const Header = () => {
               </Link>
             </Button>
 
-            <Suspense fallback={<CartIcon itemCount={0} />}>
-              <CartIconWithData />
-            </Suspense>
+            <CartIconClient />
             <MobileMenu navLinks={navLinks} />
           </div>
         </div>
