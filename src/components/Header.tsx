@@ -38,13 +38,8 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Mobile Menu - Only visible on mobile */}
-          <div className="lg:hidden ml-auto">
-            <MobileMenu navLinks={navLinks} />
-          </div>
-
           {/* Right Actions */}
-          {/* <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 ml-auto">
             <Button
               variant="ghost"
               size="icon"
@@ -72,8 +67,12 @@ const Header = () => {
             </Button>
 
             <CartIconClient />
-            <MobileMenu navLinks={navLinks} />
-          </div> */}
+
+            {/* Mobile Menu - Only visible on mobile */}
+            <div className="lg:hidden">
+              <MobileMenu navLinks={navLinks} />
+            </div>
+          </div>
         </div>
       </div>
     </header>
