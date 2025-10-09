@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ProductCard from "@/components/ProductCard";
+import Dealers from "@/components/Dealers";
 import {
   getBestsellerProducts,
   getFeaturedProducts,
@@ -261,6 +262,9 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+       {/* Dealers Section */}
+      <Dealers />
     </div>
   );
 }
