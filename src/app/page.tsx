@@ -263,7 +263,7 @@ export default async function Home() {
         </div>
       </section>
 
-       {/* Dealers Section */}
+      {/* Dealers Section */}
       <Dealers />
     </div>
   );

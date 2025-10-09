@@ -17,7 +17,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full bg-navbar-bg backdrop-blur supports-[backdrop-filter]:bg-navbar-bg/95 border-b border-border">
       <div className="container mx-auto">
-        <div className="flex h-20 items-center justify-between px-4">
+        <div className="flex h-20 items-center px-4 relative">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <h1 className="text-2xl md:text-3xl font-serif font-semibold text-primary">
@@ -25,8 +25,8 @@ const Header = () => {
             </h1>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
+          {/* Desktop Navigation - Centered */}
+          <nav className="hidden lg:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
@@ -38,8 +38,13 @@ const Header = () => {
             ))}
           </nav>
 
+          {/* Mobile Menu - Only visible on mobile */}
+          <div className="lg:hidden ml-auto">
+            <MobileMenu navLinks={navLinks} />
+          </div>
+
           {/* Right Actions */}
-          <div className="flex items-center space-x-4">
+          {/* <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
               size="icon"
@@ -68,7 +73,7 @@ const Header = () => {
 
             <CartIconClient />
             <MobileMenu navLinks={navLinks} />
-          </div>
+          </div> */}
         </div>
       </div>
     </header>

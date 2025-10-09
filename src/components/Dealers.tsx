@@ -12,7 +12,7 @@ const dealers = [
     address: "Shop No. 15, Phoenix Mills, Lower Parel",
     phone: "+91 98765 43210",
     email: "mumbai@drbackfit.com",
-    manager: "Rajesh Sharma"
+    manager: "Rajesh Sharma",
   },
   {
     id: 2,
@@ -22,7 +22,7 @@ const dealers = [
     address: "A-24, Connaught Place, Central Delhi",
     phone: "+91 98765 43211",
     email: "delhi@drbackfit.com",
-    manager: "Priya Singh"
+    manager: "Priya Singh",
   },
   {
     id: 3,
@@ -32,7 +32,7 @@ const dealers = [
     address: "UB City Mall, Level 2, Vittal Mallya Road",
     phone: "+91 98765 43212",
     email: "bangalore@drbackfit.com",
-    manager: "Arjun Krishnan"
+    manager: "Arjun Krishnan",
   },
   {
     id: 4,
@@ -42,7 +42,7 @@ const dealers = [
     address: "Express Avenue Mall, Royapettah",
     phone: "+91 98765 43213",
     email: "chennai@drbackfit.com",
-    manager: "Lakshmi Raman"
+    manager: "Lakshmi Raman",
   },
   {
     id: 5,
@@ -52,7 +52,7 @@ const dealers = [
     address: "South City Mall, Prince Anwar Shah Road",
     phone: "+91 98765 43214",
     email: "kolkata@drbackfit.com",
-    manager: "Amit Ghosh"
+    manager: "Amit Ghosh",
   },
   {
     id: 6,
@@ -62,13 +62,23 @@ const dealers = [
     address: "Inorbit Mall, HITEC City, Madhapur",
     phone: "+91 98765 43215",
     email: "hyderabad@drbackfit.com",
-    manager: "Venkat Reddy"
-  }
+    manager: "Venkat Reddy",
+  },
 ];
 
 const cities = [
-  "Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad",
-  "Pune", "Ahmedabad", "Jaipur", "Lucknow", "Kochi", "Chandigarh"
+  "Mumbai",
+  "Delhi",
+  "Bangalore",
+  "Chennai",
+  "Kolkata",
+  "Hyderabad",
+  "Pune",
+  "Ahmedabad",
+  "Jaipur",
+  "Lucknow",
+  "Kochi",
+  "Chandigarh",
 ];
 
 const Dealers = () => {
@@ -81,8 +91,8 @@ const Dealers = () => {
             Our Dealers
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Experience Dr Backfit's premium furniture at our exclusive dealer 
-            locations throughout India. Each showroom offers personalized 
+            Experience Dr Backfit's premium furniture at our exclusive dealer
+            locations throughout India. Each showroom offers personalized
             consultations and the full range of our handcrafted collections.
           </p>
         </div>
@@ -107,7 +117,10 @@ const Dealers = () => {
         {/* Dealer Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {dealers.map((dealer) => (
-            <Card key={dealer.id} className="p-6 bg-background hover:shadow-lg transition-all duration-300">
+            <Card
+              key={dealer.id}
+              className="p-6 bg-background hover:shadow-lg transition-all duration-300"
+            >
               <div className="space-y-4">
                 <div>
                   <h3 className="text-xl font-serif font-bold text-foreground mb-1">
@@ -125,15 +138,13 @@ const Dealers = () => {
                       <p className="text-foreground font-medium">
                         {dealer.city}, {dealer.state}
                       </p>
-                      <p className="text-muted-foreground">
-                        {dealer.address}
-                      </p>
+                      <p className="text-muted-foreground">{dealer.address}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-3">
                     <Phone className="h-4 w-4 text-accent flex-shrink-0" />
-                    <a 
+                    <a
                       href={`tel:${dealer.phone}`}
                       className="text-sm text-foreground hover:text-primary transition-colors"
                     >
@@ -143,7 +154,7 @@ const Dealers = () => {
 
                   <div className="flex items-center space-x-3">
                     <Mail className="h-4 w-4 text-accent flex-shrink-0" />
-                    <a 
+                    <a
                       href={`mailto:${dealer.email}`}
                       className="text-sm text-foreground hover:text-primary transition-colors"
                     >
@@ -153,9 +164,9 @@ const Dealers = () => {
                 </div>
 
                 <div className="pt-4 border-t border-border">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="w-full text-xs"
                   >
                     Visit Showroom
@@ -172,16 +183,12 @@ const Dealers = () => {
             Can't Find a Dealer Near You?
           </h3>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            We're expanding our network across India. Contact us to inquire 
+            We're expanding our network across India. Contact us to inquire
             about dealers in your area or to schedule a virtual consultation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="btn-premium">
-              Find Nearest Dealer
-            </Button>
-            <Button variant="outline">
-              Schedule Virtual Consultation
-            </Button>
+            <Button className="btn-premium">Find Nearest Dealer</Button>
+            <Button variant="outline">Schedule Virtual Consultation</Button>
           </div>
         </div>
       </div>
