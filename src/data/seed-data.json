@@ -97,6 +97,25 @@
       "tags": ["Premium", "Bestseller"]
     },
     {
+      "id": "mattress-001",
+      "slug": "livein-orthopedic-memory-foam-mattress",
+      "title": "Livein Orthopedic Memory Foam Mattress",
+      "shortDescription": "Premium orthopedic mattress with memory foam technology",
+      "longDescription": "Experience unparalleled comfort with our Livein Orthopedic Memory Foam Mattress. Designed with advanced memory foam technology that contours to your body shape, providing optimal spine alignment and pressure relief. The breathable fabric cover ensures temperature regulation throughout the night.",
+      "category": "mattresses",
+      "images": [
+        "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      "priceEstimateMin": 12948,
+      "priceEstimateMax": 15999,
+      "materials": ["Memory Foam", "High-Density Base Foam", "Breathable Fabric Cover"],
+      "dimensions": { "w": 190, "h": 20, "d": 150 },
+      "leadTimeDays": 7,
+      "isCustomAllowed": true,
+      "tags": ["Bestseller", "Orthopedic"]
+    },
+    {
       "id": "sofa-003",
       "slug": "chesterfield-sofa",
       "title": "Classic Chesterfield Sofa",
