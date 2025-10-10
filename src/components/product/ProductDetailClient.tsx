@@ -110,13 +110,13 @@ const ServiceHighlight = ({ highlight }: { highlight: ProductServiceHighlight })
   const Icon = resolveIcon(highlight.icon);
 
   return (
-    <Card className="flex items-center gap-3 border border-dashed border-secondary bg-muted/20 px-4 py-3 shadow-none">
-      <span className="rounded-full bg-primary/10 p-2 text-primary">
-        <Icon className="h-4 w-4" />
+    <Card className="flex items-center gap-2 sm:gap-3 border border-dashed border-secondary bg-muted/20 px-3 sm:px-4 py-3 shadow-none w-full max-w-full">
+      <span className="rounded-full bg-primary/10 p-1.5 sm:p-2 text-primary flex-shrink-0">
+        <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
       </span>
-      <div>
-        <p className="font-medium text-sm text-foreground">{highlight.title}</p>
-        <p className="text-xs text-muted-foreground">{highlight.description}</p>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-xs sm:text-sm text-foreground break-words">{highlight.title}</p>
+        <p className="text-xs text-muted-foreground break-words leading-relaxed">{highlight.description}</p>
       </div>
     </Card>
   );
@@ -271,48 +271,49 @@ export function ProductDetailClient({
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white overflow-x-hidden">
       {/* Main Product Section */}
-      <section id="product" className="container mx-auto px-4 py-8">
-        <div className="grid gap-8 lg:grid-cols-2">
+      <section id="product" className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-full">
+        <div className="grid gap-4 sm:gap-6 lg:gap-8 lg:grid-cols-2 w-full max-w-none">
         {/* Left Side - Product Image */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4 w-full max-w-full">
           {/* Main Product Image */}
-          <div className="relative aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100">
+          <div className="relative aspect-square overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100 w-full">
             <Image
               src={product.images[activeImageIndex]}
               alt={product.title}
               fill
               className="object-cover"
               priority
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
             
             {/* Wishlist and Share buttons */}
-            <div className="absolute right-4 top-4 flex flex-col gap-2">
+            <div className="absolute right-3 top-3 sm:right-4 sm:top-4 flex flex-col gap-2">
               <Button
                 size="icon"
                 variant="outline"
-                className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
+                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
               >
-                <Heart className="h-4 w-4" />
+                <Heart className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
               <Button
                 size="icon"
                 variant="outline"
-                className="h-10 w-10 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
+                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
               >
-                <Share2 className="h-4 w-4" />
+                <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
 
           {/* Thumbnail Images */}
-          <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide w-full">
             {product.images.map((image, index) => (
               <button
                 key={index}
                 onClick={() => setActiveImageIndex(index)}
-                className={`relative aspect-square w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-200 ${
+                className={`relative aspect-square w-14 sm:w-16 md:w-20 flex-shrink-0 overflow-hidden rounded-md sm:rounded-lg border-2 transition-all duration-200 ${
                   activeImageIndex === index
                     ? "border-orange-500 shadow-md"
                     : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
@@ -323,10 +324,11 @@ export function ProductDetailClient({
                   alt={`${product.title} view ${index + 1}`}
                   fill
                   className="object-cover"
+                  sizes="64px"
                 />
                 {/* Active indicator */}
                 {activeImageIndex === index && (
-                  <div className="absolute inset-0 bg-orange-500/10 rounded-lg" />
+                  <div className="absolute inset-0 bg-orange-500/10 rounded-md sm:rounded-lg" />
                 )}
               </button>
             ))}
@@ -334,34 +336,34 @@ export function ProductDetailClient({
         </div>
 
         {/* Right Side - Product Details */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 w-full max-w-full min-w-0">
           {/* Product Title and Rating */}
-          <div className="space-y-3">
-            <h1 className="text-2xl font-bold text-gray-900">
+          <div className="space-y-2 sm:space-y-3 w-full">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 leading-tight break-words">
               {product.title}
             </h1>
             
             {/* Rating */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap w-full">
               <div className="flex items-center gap-1">
                 {renderStars(product.rating.average)}
               </div>
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 break-words">
                 {product.rating.average} ({formatNumber(product.rating.count)} reviews)
               </span>
             </div>
           </div>
 
           {/* Price Section */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-gray-900">
+          <div className="space-y-2 w-full">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2 w-full">
+              <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words">
                 {currencyFormatter.format(product.pricing.salePrice)}
               </span>
-              <span className="text-xl text-gray-500 line-through">
+              <span className="text-base sm:text-lg lg:text-xl text-gray-500 line-through break-words">
                 {currencyFormatter.format(product.pricing.mrp)}
               </span>
-              <span className="text-sm text-green-600 font-medium">
+              <span className="text-xs sm:text-sm text-green-600 font-medium bg-green-50 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded whitespace-nowrap">
                 {product.pricing.discountPercent}% off
               </span>
             </div>
@@ -379,7 +381,8 @@ export function ProductDetailClient({
                   <Button
                     key={size.value}
                     variant={selectedSize === size.value ? "default" : "outline"}
-                    className={`px-4 py-2 ${
+                    size="sm"
+                    className={`px-3 sm:px-4 py-2 text-xs sm:text-sm ${
                       selectedSize === size.value
                         ? "bg-gray-900 text-white"
                         : "border-gray-300 text-gray-700 hover:border-gray-400"
@@ -402,32 +405,31 @@ export function ProductDetailClient({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-l-lg"
+                  className="h-9 w-9 sm:h-10 sm:w-10 rounded-l-lg"
                   onClick={decrementQuantity}
                   disabled={quantity <= 1}
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
-                <span className="flex h-10 w-12 items-center justify-center border-x border-gray-300 bg-gray-50 text-sm font-medium">
+                <span className="flex h-9 w-10 sm:h-10 sm:w-12 items-center justify-center border-x border-gray-300 bg-gray-50 text-sm font-medium">
                   {quantity}
                 </span>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-r-lg"
+                  className="h-9 w-9 sm:h-10 sm:w-10 rounded-r-lg"
                   onClick={incrementQuantity}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 w-full">
             <Button
-              className="flex-1 bg-red-600 text-white hover:bg-red-700"
-              size="lg"
+              className="flex-1 bg-red-600 text-white hover:bg-red-700 h-11 sm:h-12 text-sm sm:text-base font-semibold min-w-0"
               onClick={handleAddToCart}
             >
               ADD TO CART
@@ -435,17 +437,17 @@ export function ProductDetailClient({
           </div>
 
           {/* Savings Section */}
-          <Card className="border border-dashed border-orange-300 bg-orange-50 p-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">
+          <Card className="border border-dashed border-orange-300 bg-orange-50 p-3 sm:p-4">
+            <h3 className="text-sm font-semibold text-gray-900 mb-2 sm:mb-3">
               Save Extra with Better Offers
             </h3>
             <div className="space-y-2">
               {product.offers.map((offer, index) => (
-                <div key={index} className="flex items-start gap-2 text-sm">
-                  <span className="text-orange-600">•</span>
-                  <div>
-                    <p className="font-medium text-gray-900">{offer.title}</p>
-                    <p className="text-gray-600">{offer.description}</p>
+                <div key={index} className="flex items-start gap-2 text-xs sm:text-sm">
+                  <span className="text-orange-600 mt-1">•</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 break-words">{offer.title}</p>
+                    <p className="text-gray-600 break-words leading-relaxed">{offer.description}</p>
                   </div>
                 </div>
               ))}
@@ -463,9 +465,12 @@ export function ProductDetailClient({
                   placeholder={product.delivery.placeholder}
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
-                  className="flex-1"
+                  className="flex-1 h-10 text-sm"
                 />
-                <Button variant="outline" className="text-red-600 border-red-600 hover:bg-red-50">
+                <Button 
+                  variant="outline" 
+                  className="text-red-600 border-red-600 hover:bg-red-50 h-10 px-3 sm:px-4 text-sm whitespace-nowrap"
+                >
                   {product.delivery.ctaLabel}
                 </Button>
               </div>
@@ -474,28 +479,29 @@ export function ProductDetailClient({
 
           {/* Video Shopping */}
           <Card className="overflow-hidden">
-            <div className="flex items-center gap-4 p-4">
-              <div className="flex-1 space-y-2">
+            <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
+              <div className="flex-1 space-y-1 sm:space-y-2 min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
                   {product.videoShopping.title}
                 </p>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-gray-900 break-words">
                   {product.videoShopping.description}
                 </p>
                 <Button
                   size="sm"
-                  className="bg-orange-500 text-white hover:bg-orange-600"
+                  className="bg-orange-500 text-white hover:bg-orange-600 text-xs sm:text-sm"
                 >
                   <Play className="w-3 h-3 mr-1" />
                   {product.videoShopping.ctaLabel}
                 </Button>
               </div>
-              <div className="relative h-20 w-16 overflow-hidden rounded-lg">
+              <div className="relative h-16 w-12 sm:h-20 sm:w-16 flex-shrink-0 overflow-hidden rounded-lg">
                 <Image
                   src={product.videoShopping.imageUrl}
                   alt="Video shopping"
                   fill
                   className="object-cover"
+                  sizes="64px"
                 />
               </div>
             </div>
@@ -506,8 +512,8 @@ export function ProductDetailClient({
 
       {/* Service Highlights */}
       {product.serviceHighlights.length > 0 && (
-        <section className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <section className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4 w-full">
             {product.serviceHighlights.map((highlight) => (
               <ServiceHighlight key={highlight.title} highlight={highlight} />
             ))}
@@ -516,10 +522,10 @@ export function ProductDetailClient({
       )}
 
       {/* Product Details Sections */}
-      <section id="details" className="container mx-auto px-4 py-12 space-y-12">
+      <section id="details" className="container mx-auto px-3 sm:px-4 py-8 sm:py-12 space-y-8 sm:space-y-12 max-w-full overflow-x-hidden">
         {/* Features Section */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">Features</h2>
+        <div className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Features</h2>
           <Accordion type="single" collapsible className="space-y-4">
             {product.detailSections.map((section) => (
               <AccordionItem
@@ -543,9 +549,9 @@ export function ProductDetailClient({
         </div>
 
         {/* Product Specifications */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">Product specifications</h2>
-          <div className="rounded-lg border border-gray-200 p-6">
+        <div className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Product specifications</h2>
+          <div className="rounded-lg border border-gray-200 p-4 sm:p-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-3">
                 <h3 className="font-semibold text-gray-900">Dimensions</h3>
@@ -562,9 +568,9 @@ export function ProductDetailClient({
         </div>
 
         {/* Care Instructions */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">Care instructions</h2>
-          <div className="rounded-lg border border-gray-200 p-6">
+        <div className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Care instructions</h2>
+          <div className="rounded-lg border border-gray-200 p-4 sm:p-6">
             <p className="text-gray-600 leading-relaxed">
               {product.longDescription}
             </p>
@@ -573,9 +579,9 @@ export function ProductDetailClient({
 
         {/* Warranty */}
         {product.warranty && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Warranty</h2>
-            <div className="rounded-lg border border-gray-200 p-6">
+          <div className="space-y-4 sm:space-y-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Warranty</h2>
+            <div className="rounded-lg border border-gray-200 p-4 sm:p-6">
               <h3 className="font-semibold text-gray-900 mb-2">{product.warranty.title}</h3>
               <p className="text-gray-600">{product.warranty.description}</p>
             </div>
@@ -583,10 +589,10 @@ export function ProductDetailClient({
         )}
 
         {/* Quality promise */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-900">Quality promise</h2>
-          <div className="rounded-lg border border-gray-200 p-6">
-            <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Quality promise</h2>
+          <div className="rounded-lg border border-gray-200 p-4 sm:p-6">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="h-8 w-8 text-blue-500" />
                 <div>
@@ -621,15 +627,15 @@ export function ProductDetailClient({
       </section>
 
       {/* Enhanced Customer Reviews Section */}
-      <section id="reviews" className="container mx-auto px-4 py-12 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
+      <section id="reviews" className="container mx-auto px-3 sm:px-4 py-8 sm:py-12 bg-gray-50 max-w-full overflow-x-hidden">
+        <div className="max-w-6xl mx-auto w-full">
           {/* Section Header */}
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">CUSTOMER REVIEWS</h2>
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">CUSTOMER REVIEWS</h2>
           </div>
 
           {/* Reviews Overview */}
-          <div className="grid gap-8 lg:grid-cols-[1fr_300px_1fr] items-start mb-12">
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_300px_1fr] items-start mb-8 sm:mb-12">
             {/* Overall Rating */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
@@ -870,8 +876,8 @@ export function ProductDetailClient({
 
       {/* FAQs */}
       {product.faqs.length > 0 && (
-        <section id="faqs" className="container mx-auto px-4 py-12 space-y-8">
-          <h2 className="text-2xl font-bold text-gray-900">Frequently Asked Questions</h2>
+        <section id="faqs" className="container mx-auto px-3 sm:px-4 py-12 space-y-8 max-w-full overflow-x-hidden">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Frequently Asked Questions</h2>
           <Accordion type="single" collapsible className="space-y-4">
             {product.faqs.map((faq) => (
               <AccordionItem
@@ -893,8 +899,8 @@ export function ProductDetailClient({
 
       {/* Similar Products */}
       {similarProducts.length > 0 && (
-        <section id="similar" className="container mx-auto px-4 py-12 space-y-8">
-          <h2 className="text-2xl font-bold text-gray-900">Similar Products</h2>
+        <section id="similar" className="container mx-auto px-3 sm:px-4 py-12 space-y-8 max-w-full overflow-x-hidden">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Similar Products</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {similarProducts.map((related) => (
               <ProductCard key={related.id} {...related} />

@@ -21,16 +21,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true}>
+      <body suppressHydrationWarning={true} className="overflow-x-hidden">
         <Providers>
           <AuthProvider>
             <CartProvider>
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
-                <div className="flex flex-col min-h-screen">
+                <div className="flex flex-col min-h-screen max-w-full overflow-x-hidden">
                   <Header />
-                  <main className="flex-1">{children}</main>
+                  <main className="flex-1 max-w-full overflow-x-hidden">{children}</main>
                   <Footer />
                 </div>
               </TooltipProvider>
