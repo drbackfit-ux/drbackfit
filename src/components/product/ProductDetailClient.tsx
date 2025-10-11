@@ -167,6 +167,7 @@ export function ProductDetailClient({
     name: "",
     email: ""
   });
+  const [activeSection, setActiveSection] = useState<string>("product");
 
   const currencyFormatter = useMemo(
     () => new Intl.NumberFormat("en-IN", {
@@ -183,6 +184,44 @@ export function ProductDetailClient({
         product.sizeOptions?.[0]?.value
     );
   }, [product.sizeOptions]);
+
+  // Scroll detection for sticky navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ["product", "details", "reviews", "faqs", "similar"];
+      const scrollPosition = window.scrollY + 200; // Offset for better detection
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(sectionId);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Call once on mount
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 100; // Offset for sticky header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
 
   // For development, we'll skip Firebase real-time updates and use initial data
   // In production, you would set up Firebase configuration and enable this
@@ -272,8 +311,35 @@ export function ProductDetailClient({
 
   return (
     <div className="bg-white overflow-x-hidden">
+      {/* Sticky Navigation Menu */}
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm w-full">
+        <div className="w-full px-3 sm:px-4 overflow-x-auto">
+          <div className="flex items-center gap-1 sm:gap-2 py-3 min-w-max sm:min-w-0 sm:justify-center">
+            {[
+              { id: "product", label: "Product" },
+              { id: "details", label: "Details" },
+              { id: "reviews", label: "Reviews" },
+              { id: "faqs", label: "FAQs" },
+              { id: "similar", label: "Similar" }
+            ].map((section) => (
+              <button
+                key={section.id}
+                onClick={() => scrollToSection(section.id)}
+                className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium whitespace-nowrap rounded-lg transition-colors flex-shrink-0 ${
+                  activeSection === section.id
+                    ? "bg-orange-500 text-white"
+                    : "text-gray-600 hover:text-orange-500 hover:bg-orange-50"
+                }`}
+              >
+                {section.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
+
       {/* Main Product Section */}
-      <section id="product" className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-full">
+      <section id="product" className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-full mt-16 sm:mt-14">
         <div className="grid gap-4 sm:gap-6 lg:gap-8 lg:grid-cols-2 w-full max-w-none">
         {/* Left Side - Product Image */}
         <div className="space-y-3 sm:space-y-4 w-full max-w-full">
@@ -372,58 +438,68 @@ export function ProductDetailClient({
             </p>
           </div>
 
-          {/* Size Selection */}
-          {product.sizeOptions && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium text-gray-900">Size</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.sizeOptions.map((size) => (
-                  <Button
-                    key={size.value}
-                    variant={selectedSize === size.value ? "default" : "outline"}
-                    size="sm"
-                    className={`px-3 sm:px-4 py-2 text-xs sm:text-sm ${
-                      selectedSize === size.value
-                        ? "bg-gray-900 text-white"
-                        : "border-gray-300 text-gray-700 hover:border-gray-400"
-                    } ${!size.inStock ? "opacity-50 cursor-not-allowed" : ""}`}
-                    onClick={() => size.inStock && setSelectedSize(size.value)}
-                    disabled={!size.inStock}
-                  >
-                    {size.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Quantity Selection */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-900">Qty</h3>
-            <div className="flex items-center gap-3">
+          {/* Quantity and Size Selection Side by Side */}
+          <div className="flex gap-3 items-start">
+            {/* Quantity Selection - Left Side */}
+            <div className="flex-shrink-0">
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Qty</h3>
               <div className="flex items-center border border-gray-300 rounded-lg">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 sm:h-10 sm:w-10 rounded-l-lg"
+                  className="h-10 w-10 rounded-l-lg hover:bg-gray-100"
                   onClick={decrementQuantity}
                   disabled={quantity <= 1}
                 >
-                  <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Minus className="h-4 w-4" />
                 </Button>
-                <span className="flex h-9 w-10 sm:h-10 sm:w-12 items-center justify-center border-x border-gray-300 bg-gray-50 text-sm font-medium">
+                <span className="flex h-10 w-12 items-center justify-center border-x border-gray-300 bg-gray-50 text-sm font-medium">
                   {quantity}
                 </span>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 sm:h-10 sm:w-10 rounded-r-lg"
+                  className="h-10 w-10 rounded-r-lg hover:bg-gray-100"
                   onClick={incrementQuantity}
                 >
-                  <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Plus className="h-4 w-4" />
                 </Button>
               </div>
             </div>
+
+            {/* Size Selection - Right Side */}
+            {product.sizeOptions && (
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-sm font-medium text-gray-900">Size</h3>
+                  <span className="text-sm text-red-500 font-medium">
+                    ({product.sizeOptions.length} Standard Options)
+                  </span>
+                </div>
+                <Select value={selectedSize} onValueChange={setSelectedSize}>
+                  <SelectTrigger className="w-full h-10 text-left bg-black text-white border-black hover:bg-gray-800">
+                    <SelectValue>
+                      {selectedSize ? 
+                        product.sizeOptions.find(size => size.value === selectedSize)?.label 
+                        : "Select a size"
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {product.sizeOptions.map((size) => (
+                      <SelectItem 
+                        key={size.value} 
+                        value={size.value}
+                        disabled={!size.inStock}
+                        className={`${!size.inStock ? "opacity-50 cursor-not-allowed" : ""}`}
+                      >
+                        {size.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}

@@ -18,14 +18,6 @@ import {
   fetchSimilarProducts,
 } from "@/services/firebase/product.service";
 
-const NAV_ITEMS = [
-  { label: "Product", href: "#product" },
-  { label: "Details", href: "#details" },
-  { label: "Overview", href: "#overview" },
-  { label: "Reviews", href: "#reviews" },
-  { label: "FAQs", href: "#faqs" },
-];
-
 export const revalidate = 0;
 
 export async function generateStaticParams() {
@@ -113,24 +105,6 @@ export default async function ProductPage({
           </Breadcrumb>
         </div>
       </header>
-
-      <nav className="bg-white shadow-sm">
-        <div className="container mx-auto flex flex-wrap gap-3 px-4 py-3 text-sm font-medium text-muted-foreground">
-          {NAV_ITEMS.map((item, index) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className={`rounded-full px-4 py-2 transition-colors ${
-                index === 0
-                  ? "bg-[#E0103A] text-white shadow"
-                  : "hover:bg-primary/10 hover:text-primary"
-              }`}
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-      </nav>
 
       <main>
         <ProductDetailClient

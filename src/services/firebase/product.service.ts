@@ -98,10 +98,156 @@ const toProductDetailFallback = (product: Product): ProductDetail => {
       subLabel: `Dispatch in ${product.leadTimeDays} days`,
       inStock: true,
     },
-    sizeOptions: product.category === "mattresses" ? [
-      { label: "Single (90x190cm)", value: "single", inStock: true, isDefault: false },
-      { label: "Queen (150x190cm)", value: "queen", inStock: true, isDefault: true },
-      { label: "King (180x200cm)", value: "king", inStock: true, isDefault: false },
+    sizeOptions: (product.category === "mattresses" || product.category === "beds") ? [
+      // Standard Single Sizes
+      { label: "Single | 90 X 190 (0.90 m x 1.90 m) | 3\" (7.6cm)", value: "single-3", inStock: true, isDefault: false },
+      { label: "Single | 90 X 190 (0.90 m x 1.90 m) | 4\" (10.2cm)", value: "single-4", inStock: true, isDefault: false },
+      { label: "Single | 90 X 190 (0.90 m x 1.90 m) | 5\" (12.7cm)", value: "single-5", inStock: true, isDefault: false },
+      { label: "Single | 90 X 190 (0.90 m x 1.90 m) | 6\" (15.2cm)", value: "single-6", inStock: true, isDefault: false },
+      { label: "Single | 90 X 190 (0.90 m x 1.90 m) | 8\" (20.3cm)", value: "single-8", inStock: true, isDefault: false },
+      { label: "Single | 90 X 190 (0.90 m x 1.90 m) | 10\" (25.4cm)", value: "single-10", inStock: true, isDefault: false },
+      { label: "Single | 90 X 190 (0.90 m x 1.90 m) | 12\" (30.5cm)", value: "single-12", inStock: true, isDefault: false },
+      
+      // Extended Single Sizes
+      { label: "Single XL | 90 X 200 (0.90 m x 2.00 m) | 3\" (7.6cm)", value: "single-xl-3", inStock: true, isDefault: false },
+      { label: "Single XL | 90 X 200 (0.90 m x 2.00 m) | 4\" (10.2cm)", value: "single-xl-4", inStock: true, isDefault: false },
+      { label: "Single XL | 90 X 200 (0.90 m x 2.00 m) | 5\" (12.7cm)", value: "single-xl-5", inStock: true, isDefault: false },
+      { label: "Single XL | 90 X 200 (0.90 m x 2.00 m) | 6\" (15.2cm)", value: "single-xl-6", inStock: true, isDefault: false },
+      { label: "Single XL | 90 X 200 (0.90 m x 2.00 m) | 8\" (20.3cm)", value: "single-xl-8", inStock: true, isDefault: false },
+      
+      // Double/Full Sizes
+      { label: "Double | 135 X 190 (1.35 m x 1.90 m) | 3\" (7.6cm)", value: "double-3", inStock: true, isDefault: false },
+      { label: "Double | 135 X 190 (1.35 m x 1.90 m) | 4\" (10.2cm)", value: "double-4", inStock: true, isDefault: false },
+      { label: "Double | 135 X 190 (1.35 m x 1.90 m) | 5\" (12.7cm)", value: "double-5", inStock: true, isDefault: false },
+      { label: "Double | 135 X 190 (1.35 m x 1.90 m) | 6\" (15.2cm)", value: "double-6", inStock: true, isDefault: false },
+      { label: "Double | 135 X 190 (1.35 m x 1.90 m) | 8\" (20.3cm)", value: "double-8", inStock: true, isDefault: false },
+      { label: "Double | 135 X 190 (1.35 m x 1.90 m) | 10\" (25.4cm)", value: "double-10", inStock: true, isDefault: false },
+      { label: "Double | 135 X 190 (1.35 m x 1.90 m) | 12\" (30.5cm)", value: "double-12", inStock: true, isDefault: false },
+      
+      // Queen Sizes
+      { label: "Queen | 150 X 190 (1.50 m x 1.90 m) | 3\" (7.6cm)", value: "queen-3", inStock: true, isDefault: false },
+      { label: "Queen | 150 X 190 (1.50 m x 1.90 m) | 4\" (10.2cm)", value: "queen-4", inStock: true, isDefault: false },
+      { label: "Queen | 150 X 190 (1.50 m x 1.90 m) | 5\" (12.7cm)", value: "queen-5", inStock: true, isDefault: true },
+      { label: "Queen | 150 X 190 (1.50 m x 1.90 m) | 6\" (15.2cm)", value: "queen-6", inStock: true, isDefault: false },
+      { label: "Queen | 150 X 190 (1.50 m x 1.90 m) | 8\" (20.3cm)", value: "queen-8", inStock: true, isDefault: false },
+      { label: "Queen | 150 X 190 (1.50 m x 1.90 m) | 10\" (25.4cm)", value: "queen-10", inStock: true, isDefault: false },
+      { label: "Queen | 150 X 190 (1.50 m x 1.90 m) | 12\" (30.5cm)", value: "queen-12", inStock: true, isDefault: false },
+      
+      // Queen XL Sizes
+      { label: "Queen XL | 160 X 200 (1.60 m x 2.00 m) | 4\" (10.2cm)", value: "queen-xl-4", inStock: true, isDefault: false },
+      { label: "Queen XL | 160 X 200 (1.60 m x 2.00 m) | 5\" (12.7cm)", value: "queen-xl-5", inStock: true, isDefault: false },
+      { label: "Queen XL | 160 X 200 (1.60 m x 2.00 m) | 6\" (15.2cm)", value: "queen-xl-6", inStock: true, isDefault: false },
+      { label: "Queen XL | 160 X 200 (1.60 m x 2.00 m) | 8\" (20.3cm)", value: "queen-xl-8", inStock: true, isDefault: false },
+      { label: "Queen XL | 160 X 200 (1.60 m x 2.00 m) | 10\" (25.4cm)", value: "queen-xl-10", inStock: true, isDefault: false },
+      
+      // King Sizes
+      { label: "King | 180 X 200 (1.80 m x 2.00 m) | 3\" (7.6cm)", value: "king-3", inStock: true, isDefault: false },
+      { label: "King | 180 X 200 (1.80 m x 2.00 m) | 4\" (10.2cm)", value: "king-4", inStock: true, isDefault: false },
+      { label: "King | 180 X 200 (1.80 m x 2.00 m) | 5\" (12.7cm)", value: "king-5", inStock: true, isDefault: false },
+      { label: "King | 180 X 200 (1.80 m x 2.00 m) | 6\" (15.2cm)", value: "king-6", inStock: true, isDefault: false },
+      { label: "King | 180 X 200 (1.80 m x 2.00 m) | 8\" (20.3cm)", value: "king-8", inStock: true, isDefault: false },
+      { label: "King | 180 X 200 (1.80 m x 2.00 m) | 10\" (25.4cm)", value: "king-10", inStock: true, isDefault: false },
+      { label: "King | 180 X 200 (1.80 m x 2.00 m) | 12\" (30.5cm)", value: "king-12", inStock: true, isDefault: false },
+      
+      // Super King Sizes
+      { label: "Super King | 200 X 200 (2.00 m x 2.00 m) | 4\" (10.2cm)", value: "super-king-4", inStock: true, isDefault: false },
+      { label: "Super King | 200 X 200 (2.00 m x 2.00 m) | 5\" (12.7cm)", value: "super-king-5", inStock: true, isDefault: false },
+      { label: "Super King | 200 X 200 (2.00 m x 2.00 m) | 6\" (15.2cm)", value: "super-king-6", inStock: true, isDefault: false },
+      { label: "Super King | 200 X 200 (2.00 m x 2.00 m) | 8\" (20.3cm)", value: "super-king-8", inStock: true, isDefault: false },
+      { label: "Super King | 200 X 200 (2.00 m x 2.00 m) | 10\" (25.4cm)", value: "super-king-10", inStock: true, isDefault: false },
+      { label: "Super King | 200 X 200 (2.00 m x 2.00 m) | 12\" (30.5cm)", value: "super-king-12", inStock: true, isDefault: false },
+      
+      // California King Sizes
+      { label: "California King | 183 X 213 (1.83 m x 2.13 m) | 4\" (10.2cm)", value: "cal-king-4", inStock: false, isDefault: false },
+      { label: "California King | 183 X 213 (1.83 m x 2.13 m) | 5\" (12.7cm)", value: "cal-king-5", inStock: false, isDefault: false },
+      { label: "California King | 183 X 213 (1.83 m x 2.13 m) | 6\" (15.2cm)", value: "cal-king-6", inStock: false, isDefault: false },
+      { label: "California King | 183 X 213 (1.83 m x 2.13 m) | 8\" (20.3cm)", value: "cal-king-8", inStock: false, isDefault: false },
+      { label: "California King | 183 X 213 (1.83 m x 2.13 m) | 10\" (25.4cm)", value: "cal-king-10", inStock: false, isDefault: false },
+      
+      // Eastern King Sizes
+      { label: "Eastern King | 193 X 203 (1.93 m x 2.03 m) | 6\" (15.2cm)", value: "eastern-king-6", inStock: true, isDefault: false },
+      { label: "Eastern King | 193 X 203 (1.93 m x 2.03 m) | 8\" (20.3cm)", value: "eastern-king-8", inStock: true, isDefault: false },
+      { label: "Eastern King | 193 X 203 (1.93 m x 2.03 m) | 10\" (25.4cm)", value: "eastern-king-10", inStock: true, isDefault: false },
+      
+      // Custom/European Sizes
+      { label: "European Single | 90 X 200 (0.90 m x 2.00 m) | 5\" (12.7cm)", value: "euro-single-5", inStock: true, isDefault: false },
+      { label: "European Double | 140 X 200 (1.40 m x 2.00 m) | 5\" (12.7cm)", value: "euro-double-5", inStock: true, isDefault: false },
+      { label: "European King | 160 X 200 (1.60 m x 2.00 m) | 6\" (15.2cm)", value: "euro-king-6", inStock: true, isDefault: false },
+      { label: "European Super King | 180 X 200 (1.80 m x 2.00 m) | 6\" (15.2cm)", value: "euro-super-king-6", inStock: true, isDefault: false },
+      
+      // Specialty Sizes
+      { label: "Twin | 99 X 190 (0.99 m x 1.90 m) | 4\" (10.2cm)", value: "twin-4", inStock: true, isDefault: false },
+      { label: "Twin XL | 99 X 203 (0.99 m x 2.03 m) | 4\" (10.2cm)", value: "twin-xl-4", inStock: true, isDefault: false },
+      { label: "Full XL | 137 X 203 (1.37 m x 2.03 m) | 5\" (12.7cm)", value: "full-xl-5", inStock: true, isDefault: false },
+      { label: "Olympic Queen | 168 X 203 (1.68 m x 2.03 m) | 6\" (15.2cm)", value: "olympic-queen-6", inStock: true, isDefault: false },
+      { label: "Split King | 2x 97 X 203 (0.97 m x 2.03 m each) | 8\" (20.3cm)", value: "split-king-8", inStock: true, isDefault: false },
+      { label: "Split California King | 2x 91 X 213 (0.91 m x 2.13 m each) | 8\" (20.3cm)", value: "split-cal-king-8", inStock: false, isDefault: false },
+    ] : (product.category === "sofas") ? [
+      // 1-Seater Sofas
+      { label: "1-Seater | 90 X 85 X 85 cm | Compact", value: "1-seater-compact", inStock: true, isDefault: false },
+      { label: "1-Seater | 100 X 90 X 85 cm | Standard", value: "1-seater-standard", inStock: true, isDefault: false },
+      { label: "1-Seater | 110 X 95 X 90 cm | Luxury", value: "1-seater-luxury", inStock: true, isDefault: false },
+      
+      // 2-Seater Sofas
+      { label: "2-Seater | 130 X 80 X 85 cm | Compact", value: "2-seater-compact", inStock: true, isDefault: false },
+      { label: "2-Seater | 150 X 80 X 85 cm | Standard", value: "2-seater-standard", inStock: true, isDefault: false },
+      { label: "2-Seater | 160 X 85 X 90 cm | Comfort", value: "2-seater-comfort", inStock: true, isDefault: false },
+      { label: "2-Seater | 170 X 90 X 95 cm | Luxury", value: "2-seater-luxury", inStock: true, isDefault: false },
+      
+      // 3-Seater Sofas
+      { label: "3-Seater | 180 X 85 X 85 cm | Compact", value: "3-seater-compact", inStock: true, isDefault: false },
+      { label: "3-Seater | 200 X 90 X 85 cm | Standard", value: "3-seater-standard", inStock: true, isDefault: true },
+      { label: "3-Seater | 220 X 95 X 90 cm | Comfort", value: "3-seater-comfort", inStock: true, isDefault: false },
+      { label: "3-Seater | 240 X 100 X 95 cm | Luxury", value: "3-seater-luxury", inStock: true, isDefault: false },
+      
+      // 4-Seater Sofas
+      { label: "4-Seater | 250 X 90 X 85 cm | Standard", value: "4-seater-standard", inStock: true, isDefault: false },
+      { label: "4-Seater | 270 X 95 X 90 cm | Comfort", value: "4-seater-comfort", inStock: true, isDefault: false },
+      { label: "4-Seater | 290 X 100 X 95 cm | Luxury", value: "4-seater-luxury", inStock: true, isDefault: false },
+      
+      // L-Shape Sofas
+      { label: "L-Shape | 220 X 160 X 85 cm | Compact Corner", value: "l-shape-compact", inStock: true, isDefault: false },
+      { label: "L-Shape | 250 X 180 X 85 cm | Standard Corner", value: "l-shape-standard", inStock: true, isDefault: false },
+      { label: "L-Shape | 280 X 200 X 90 cm | Large Corner", value: "l-shape-large", inStock: true, isDefault: false },
+      { label: "L-Shape | 300 X 220 X 95 cm | Luxury Corner", value: "l-shape-luxury", inStock: true, isDefault: false },
+      
+      // Sectional Sofas
+      { label: "Sectional | 250 X 250 X 85 cm | Square Configuration", value: "sectional-square", inStock: true, isDefault: false },
+      { label: "Sectional | 300 X 200 X 90 cm | Rectangular Configuration", value: "sectional-rect", inStock: true, isDefault: false },
+      { label: "Sectional | 350 X 250 X 95 cm | Large Configuration", value: "sectional-large", inStock: true, isDefault: false },
+      
+      // Modular Sofas
+      { label: "Modular 2-Piece | 160 X 80 X 85 cm | Standard", value: "modular-2piece", inStock: true, isDefault: false },
+      { label: "Modular 3-Piece | 240 X 80 X 85 cm | Standard", value: "modular-3piece", inStock: true, isDefault: false },
+      { label: "Modular 4-Piece | 320 X 80 X 85 cm | Standard", value: "modular-4piece", inStock: true, isDefault: false },
+      { label: "Modular 5-Piece | 400 X 80 X 85 cm | Large", value: "modular-5piece", inStock: true, isDefault: false },
+      
+      // Chesterfield Sofas
+      { label: "Chesterfield 2-Seater | 150 X 85 X 75 cm | Classic", value: "chesterfield-2", inStock: true, isDefault: false },
+      { label: "Chesterfield 3-Seater | 200 X 85 X 75 cm | Classic", value: "chesterfield-3", inStock: true, isDefault: false },
+      
+      // Recliner Sofas
+      { label: "Recliner 1-Seater | 95 X 95 X 100 cm | Manual", value: "recliner-1-manual", inStock: true, isDefault: false },
+      { label: "Recliner 2-Seater | 150 X 95 X 100 cm | Manual", value: "recliner-2-manual", inStock: true, isDefault: false },
+      { label: "Recliner 3-Seater | 200 X 95 X 100 cm | Manual", value: "recliner-3-manual", inStock: true, isDefault: false },
+      { label: "Recliner 1-Seater | 95 X 95 X 100 cm | Electric", value: "recliner-1-electric", inStock: true, isDefault: false },
+      { label: "Recliner 2-Seater | 150 X 95 X 100 cm | Electric", value: "recliner-2-electric", inStock: true, isDefault: false },
+      { label: "Recliner 3-Seater | 200 X 95 X 100 cm | Electric", value: "recliner-3-electric", inStock: true, isDefault: false },
+      
+      // Sleeper Sofas
+      { label: "Sleeper 2-Seater | 150 X 85 X 85 cm | Converts to Single Bed", value: "sleeper-2", inStock: true, isDefault: false },
+      { label: "Sleeper 3-Seater | 200 X 85 X 85 cm | Converts to Double Bed", value: "sleeper-3", inStock: true, isDefault: false },
+      
+      // Loveseat Sofas
+      { label: "Loveseat | 125 X 80 X 85 cm | Intimate Seating", value: "loveseat-standard", inStock: true, isDefault: false },
+      { label: "Loveseat | 140 X 85 X 90 cm | Comfort Seating", value: "loveseat-comfort", inStock: true, isDefault: false },
+      
+      // Ottoman/Storage Sofas
+      { label: "Storage Sofa 2-Seater | 150 X 80 X 85 cm | Hidden Storage", value: "storage-2", inStock: true, isDefault: false },
+      { label: "Storage Sofa 3-Seater | 200 X 90 X 85 cm | Hidden Storage", value: "storage-3", inStock: true, isDefault: false },
+      
+      // Custom Sofas
+      { label: "Custom Size | Specify Dimensions | Made to Order", value: "custom-sofa", inStock: false, isDefault: false },
     ] : undefined,
     offers: [
       { title: "Bank Offer", description: "10% off for set in all purchases over ₹899 selected partner", icon: "%" },
