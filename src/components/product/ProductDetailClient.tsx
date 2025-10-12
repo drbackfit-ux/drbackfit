@@ -168,6 +168,8 @@ export function ProductDetailClient({
     email: ""
   });
   const [activeSection, setActiveSection] = useState<string>("product");
+  const [showAllOffers, setShowAllOffers] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   const currencyFormatter = useMemo(
     () => new Intl.NumberFormat("en-IN", {
@@ -339,12 +341,12 @@ export function ProductDetailClient({
       </nav>
 
       {/* Main Product Section */}
-      <section id="product" className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-full mt-16 sm:mt-14">
+      <section id="product" className="container mx-auto px-3 sm:px-4 py-1 sm:py-1 max-w-full mt-4 sm:mt-2">
         <div className="grid gap-4 sm:gap-6 lg:gap-8 lg:grid-cols-2 w-full max-w-none">
         {/* Left Side - Product Image */}
         <div className="space-y-3 sm:space-y-4 w-full max-w-full">
           {/* Main Product Image */}
-          <div className="relative aspect-square overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100 w-full">
+          <div className="relative aspect-square lg:aspect-[4/5] overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100 w-full max-h-[60vh] lg:max-h-[75vh]">
             <Image
               src={product.images[activeImageIndex]}
               alt={product.title}
@@ -438,6 +440,45 @@ export function ProductDetailClient({
             </p>
           </div>
 
+          {/* Savings Section */}
+          <Card className="border border-dashed border-orange-300 bg-orange-50 p-3 sm:p-4">
+            <h3 className="text-sm font-semibold text-gray-900 mb-2 sm:mb-3">
+              Save Extra with Better Offers
+            </h3>
+            <div className="space-y-1">
+              {/* Show first offer always */}
+              {product.offers.slice(0, 1).map((offer, index) => (
+                <div key={index} className="flex items-start gap-2 text-xs sm:text-sm">
+                  <span className="text-orange-600 mt-1">•</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 break-words">{offer.title}</p>
+                    <p className="text-gray-600 break-words leading-relaxed">{offer.description}</p>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Show remaining offers when expanded */}
+              {showAllOffers && product.offers.slice(1).map((offer, index) => (
+                <div key={index + 1} className="flex items-start gap-2 text-xs sm:text-sm">
+                  <span className="text-orange-600 mt-1">•</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 break-words">{offer.title}</p>
+                    <p className="text-gray-600 break-words leading-relaxed">{offer.description}</p>
+                  </div>
+                </div>
+              ))}
+              
+              {/* View More / View Less button */}
+              {product.offers.length > 1 && (
+                <button
+                  onClick={() => setShowAllOffers(!showAllOffers)}
+                  className="text-xs sm:text-sm text-orange-600 hover:text-orange-700 font-medium mt-2 transition-colors"
+                >
+                  {showAllOffers ? '- View Less' : `+ View More (${product.offers.length - 1} more offers)`}
+                </button>
+              )}
+            </div>
+          </Card>
           {/* Quantity and Size Selection Side by Side */}
           <div className="flex gap-3 items-start">
             {/* Quantity Selection - Left Side */}
@@ -512,23 +553,7 @@ export function ProductDetailClient({
             </Button>
           </div>
 
-          {/* Savings Section */}
-          <Card className="border border-dashed border-orange-300 bg-orange-50 p-3 sm:p-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2 sm:mb-3">
-              Save Extra with Better Offers
-            </h3>
-            <div className="space-y-2">
-              {product.offers.map((offer, index) => (
-                <div key={index} className="flex items-start gap-2 text-xs sm:text-sm">
-                  <span className="text-orange-600 mt-1">•</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 break-words">{offer.title}</p>
-                    <p className="text-gray-600 break-words leading-relaxed">{offer.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+          
 
           {/* Delivery Check */}
           {product.delivery && (
@@ -554,7 +579,7 @@ export function ProductDetailClient({
           )}
 
           {/* Video Shopping */}
-          <Card className="overflow-hidden">
+          {/* <Card className="overflow-hidden">
             <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
               <div className="flex-1 space-y-1 sm:space-y-2 min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
@@ -581,7 +606,7 @@ export function ProductDetailClient({
                 />
               </div>
             </div>
-          </Card>
+          </Card> */}
         </div>
         </div>
       </section>
@@ -897,7 +922,49 @@ export function ProductDetailClient({
 
             {/* Individual Reviews */}
             <div className="grid gap-6 md:grid-cols-2">
-              {reviews.slice(0, 6).map((review) => (
+              {/* Show first 2 reviews always */}
+              {reviews.slice(0, 2).map((review) => (
+                <Card key={review.id} className="p-6 border-gray-200">
+                  <div className="space-y-3">
+                    {/* Review Header */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-semibold text-orange-600">
+                          {review.userName.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            {renderStars(review.rating)}
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {review.createdAt.toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "2-digit", 
+                              day: "2-digit"
+                            })}
+                          </span>
+                        </div>
+                        <p className="text-sm font-medium text-gray-900">{review.userName}</p>
+                      </div>
+                    </div>
+
+                    {/* Review Content */}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm mb-1">
+                        {review.headline}
+                      </h4>
+                      <p className="text-sm text-gray-600 leading-relaxed">
+                        {review.comment}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+              
+              {/* Show remaining reviews when expanded */}
+              {showAllReviews && reviews.slice(2).map((review) => (
                 <Card key={review.id} className="p-6 border-gray-200">
                   <div className="space-y-3">
                     {/* Review Header */}
@@ -938,11 +1005,15 @@ export function ProductDetailClient({
               ))}
             </div>
 
-            {/* Load More Button */}
-            {reviews.length > 6 && (
+            {/* View More Reviews Button */}
+            {reviews.length > 2 && (
               <div className="text-center pt-6">
-                <Button variant="outline" className="px-8">
-                  Load more reviews
+                <Button 
+                  variant="outline" 
+                  className="px-8 border-orange-300 text-orange-600 hover:bg-orange-50"
+                  onClick={() => setShowAllReviews(!showAllReviews)}
+                >
+                  {showAllReviews ? '- View Less Reviews' : `+ View More Reviews (${reviews.length - 2} more)`}
                 </Button>
               </div>
             )}

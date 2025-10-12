@@ -70,52 +70,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Brand Story Section */}
-      <section className="section-padding bg-secondary/20">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 animate-fade-in-up">
-              <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-                Craftsmanship That Speaks
-              </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                For over two decades, Dr Backfit has been creating furniture
-                that transcends trends. Our workshop combines traditional
-                joinery techniques with modern design sensibilities, ensuring
-                each piece is both beautiful and built to last.
-              </p>
-              <ul className="space-y-3">
-                {[
-                  "Sustainably sourced hardwoods",
-                  "Hand-selected premium fabrics",
-                  "Custom dimensions available",
-                  "Lifetime craftsmanship warranty",
-                ].map((feature) => (
-                  <li key={feature} className="flex items-center space-x-3">
-                    <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0" />
-                    <span className="text-foreground">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button asChild className="btn-premium">
-                <Link href="/about">
-                  Our Story <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
-            <div className="relative">
-              <Image
-                src="/craftsmanship.jpg"
-                alt="Craftsmanship detail"
-                width={600}
-                height={400}
-                className="rounded-2xl shadow-2xl"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Bestseller Products Section */}
       <section className="section-padding">
         <div className="container mx-auto">
@@ -204,6 +158,52 @@ export default async function Home() {
                 View Full Catalog <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Story Section */}
+      <section className="section-padding bg-secondary/20">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6 animate-fade-in-up">
+              <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
+                Craftsmanship That Speaks
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                For over two decades, Dr Backfit has been creating furniture
+                that transcends trends. Our workshop combines traditional
+                joinery techniques with modern design sensibilities, ensuring
+                each piece is both beautiful and built to last.
+              </p>
+              <ul className="space-y-3">
+                {[
+                  "Sustainably sourced hardwoods",
+                  "Hand-selected premium fabrics",
+                  "Custom dimensions available",
+                  "Lifetime craftsmanship warranty",
+                ].map((feature) => (
+                  <li key={feature} className="flex items-center space-x-3">
+                    <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0" />
+                    <span className="text-foreground">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button asChild className="btn-premium">
+                <Link href="/about">
+                  Our Story <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+            <div className="relative">
+              <Image
+                src="/craftsmanship.jpg"
+                alt="Craftsmanship detail"
+                width={600}
+                height={400}
+                className="rounded-2xl shadow-2xl"
+              />
+            </div>
           </div>
         </div>
       </section>
