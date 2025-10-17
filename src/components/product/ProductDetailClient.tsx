@@ -23,6 +23,8 @@ import {
   Heart,
   Share2,
   Play,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -291,6 +293,18 @@ export function ProductDetailClient({
     setReviewForm(prev => ({ ...prev, rating }));
   };
 
+  const handlePreviousImage = () => {
+    setActiveImageIndex((prev) => 
+      prev === 0 ? product.images.length - 1 : prev - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setActiveImageIndex((prev) => 
+      prev === product.images.length - 1 ? 0 : prev + 1
+    );
+  };
+
   const renderReviewStars = (rating: number, interactive: boolean = false) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -346,7 +360,7 @@ export function ProductDetailClient({
         {/* Left Side - Product Image */}
         <div className="space-y-3 sm:space-y-4 w-full max-w-full">
           {/* Main Product Image */}
-          <div className="relative aspect-square lg:aspect-[4/5] overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100 w-full max-h-[60vh] lg:max-h-[75vh]">
+          <div className="relative aspect-square lg:aspect-[4/5] overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100 w-full max-h-[60vh] lg:max-h-[75vh] group">
             <Image
               src={product.images[activeImageIndex]}
               alt={product.title}
@@ -355,6 +369,31 @@ export function ProductDetailClient({
               priority
               sizes="(max-width: 768px) 100vw, 50vw"
             />
+
+            {/* Image Navigation Buttons */}
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between items-center px-2 sm:px-3">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={handlePreviousImage}
+                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              >
+                <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6 text-gray-700" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={handleNextImage}
+                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              >
+                <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 text-gray-700" />
+              </Button>
+            </div>
+            
+            {/* Image Counter */}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+              {activeImageIndex + 1} / {product.images.length}
+            </div>
             
             {/* Wishlist and Share buttons */}
             <div className="absolute right-3 top-3 sm:right-4 sm:top-4 flex flex-col gap-2">

@@ -108,7 +108,7 @@ export default function About() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button asChild size="lg" className="btn-premium">
-              <Link href="/showroom">Visit Showroom</Link>
+              <Link href="/contact">Visit Showroom</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="btn-outline-premium">
               <Link href="/catalog">Browse Collection</Link>

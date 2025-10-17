@@ -7,6 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 
 export default function Contact() {
@@ -14,13 +21,14 @@ export default function Contact() {
     name: "",
     email: "",
     phone: "",
+    enquiryType: "general",
     message: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast.success("Thank you! We'll get back to you soon.");
-    setFormData({ name: "", email: "", phone: "", message: "" });
+    setFormData({ name: "", email: "", phone: "", enquiryType: "general", message: "" });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -87,6 +95,25 @@ export default function Contact() {
                     onChange={handleChange}
                     placeholder="(555) 123-4567"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="enquiryType">Enquiry Type *</Label>
+                  <Select
+                    value={formData.enquiryType}
+                    onValueChange={(value) => 
+                      setFormData(prev => ({ ...prev, enquiryType: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select enquiry type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="general">General Enquiry</SelectItem>
+                      <SelectItem value="showroom">Showroom Visit</SelectItem>
+                      <SelectItem value="custom">Custom Order</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">

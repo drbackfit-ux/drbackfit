@@ -11,6 +11,7 @@ import { Review, ReviewSchema } from "@/models/Review";
 import { getFirebaseAdminDb } from "@/lib/firebase/server";
 import { prepareProductPayload } from "@/utils/product-normalizer";
 import seedData from "@/data/seed-data.json";
+import accessoriesData from "@/data/accessories-data.json";
 
 const PRODUCTS_COLLECTION = "products";
 const REVIEWS_SUBCOLLECTION = "reviews";
@@ -33,11 +34,23 @@ export const fetchAllProductSlugs = cache(async (): Promise<string[]> => {
   try {
     const db = getFirebaseAdminDb();
     const snapshot = await db.collection(PRODUCTS_COLLECTION).select("slug").get();
-    return snapshot.docs
+    const firestoreSlugs = snapshot.docs
       .map((doc) => doc.data()?.slug as string | undefined)
       .filter((slug): slug is string => Boolean(slug));
+    
+    // Get slugs from seed data and accessories
+    const seedSlugs = seedData.products.map((p) => p.slug);
+    const accessorySlugs = accessoriesData.products.map((p) => p.slug);
+    
+    // Combine all slugs and remove duplicates
+    const allSlugs = [...firestoreSlugs, ...seedSlugs, ...accessorySlugs];
+    return Array.from(new Set(allSlugs));
   } catch {
-    return seedData.products.map((p) => p.slug);
+    // Fallback to static data if Firestore fails
+    const seedSlugs = seedData.products.map((p) => p.slug);
+    const accessorySlugs = accessoriesData.products.map((p) => p.slug);
+    const allSlugs = [...seedSlugs, ...accessorySlugs];
+    return Array.from(new Set(allSlugs));
   }
 });
 
@@ -64,6 +77,18 @@ const toProductDetailFallback = (product: Product): ProductDetail => {
         "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=600&fit=crop", // Sofa detail
         "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800&h=600&fit=crop", // Different angle
         "https://images.unsplash.com/photo-1615875605825-5eb9bb5d52ac?w=800&h=600&fit=crop"  // Room context
+      );
+    } else if (category === 'pillow') {
+      images.push(
+        "https://images.unsplash.com/photo-1584100936454-c863c44e9f45?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1584100936753-ab37c6fe6e37?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1584100936538-35cd235eb451?w=800&h=600&fit=crop"
+      );
+    } else if (category === 'cover') {
+      images.push(
+        "https://images.unsplash.com/photo-1578898887932-dce23a595ad4?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1578898887277-c7c77f5eba6c?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1578898887068-4b53ff878e44?w=800&h=600&fit=crop"
       );
     } else {
       // Generic furniture images for other categories
@@ -299,11 +324,22 @@ const toProductDetailFallback = (product: Product): ProductDetail => {
 export const fetchProductDetailBySlug = cache(
   async (slug: string): Promise<ProductDetail | null> => {
     try {
-      const db = getFirebaseAdminDb();
-      const snapshot = await db
+      // First check seed data
+      const seedProduct = seedData.products.find((p) => p.slug === slug);
+      if (seedProduct) {
+        return toProductDetailFallback(seedProduct);
+      }
+
+      // Then check accessories data
+      const accessoryProduct = accessoriesData.products.find((p) => p.slug === slug);
+      if (accessoryProduct) {
+        return toProductDetailFallback(accessoryProduct);
+      }
+
+      // If not found in either, try Firebase
+      const snapshot = await getFirebaseAdminDb()
         .collection(PRODUCTS_COLLECTION)
         .where("slug", "==", slug)
-        .limit(1)
         .get();
 
       if (snapshot.empty) {
@@ -311,11 +347,9 @@ export const fetchProductDetailBySlug = cache(
       }
 
       return parseProductDetail(snapshot.docs[0]);
-    } catch {
-      const base = seedData.products.find((p) => p.slug === slug);
-      if (!base) return null;
-      const parsedBase = ProductSchema.parse(base);
-      return toProductDetailFallback(parsedBase);
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      return null;
     }
   }
 );

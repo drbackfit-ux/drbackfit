@@ -17,7 +17,7 @@ const CartIconClient = () => {
   }, [getItemCount]);
 
   return (
-    <Button variant="ghost" size="icon" className="relative" asChild>
+    <Button variant="ghost" size="icon" className="relative hover:bg-primary-button hover:text-primary-foreground" asChild>
       <Link href="/cart">
         <ShoppingCart className="h-5 w-5" />
         {isHydrated && itemCount > 0 && (
