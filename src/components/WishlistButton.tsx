@@ -3,11 +3,11 @@
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWishlist } from "@/context/WishlistContext";
-import type { Product } from "@/models/Product";
+import type { WishlistProduct } from "@/models/WishlistProduct";
 import { Button } from "@/components/ui/button";
 
 interface WishlistButtonProps {
-  product: Product;
+  product: WishlistProduct;
   variant?: "default" | "ghost";
   size?: "icon" | "default";
 }

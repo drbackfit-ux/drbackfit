@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Product } from "@/models/Product";
+import type { WishlistProduct } from "@/models/WishlistProduct";
 
 interface WishlistContextType {
-  wishlist: Product[];
-  addToWishlist: (product: Product) => void;
+  wishlist: WishlistProduct[];
+  addToWishlist: (product: WishlistProduct) => void;
   removeFromWishlist: (productId: string) => void;
   isInWishlist: (productId: string) => boolean;
 }
@@ -18,7 +18,7 @@ const WishlistContext = createContext<WishlistContextType>({
 });
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [wishlist, setWishlist] = useState<Product[]>([]);
+  const [wishlist, setWishlist] = useState<WishlistProduct[]>([]);
 
   useEffect(() => {
     // Load wishlist from localStorage on mount
@@ -33,7 +33,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
-  const addToWishlist = (product: Product) => {
+  const addToWishlist = (product: WishlistProduct) => {
     setWishlist((prev) => [...prev, product]);
   };
 
