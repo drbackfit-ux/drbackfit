@@ -3,6 +3,7 @@ import { cache } from "react";
 import { Product, ProductsSchema, ProductSchema } from "@/models/Product";
 import { Testimonial, TestimonialsSchema } from "@/models/Common";
 import seedData from "@/data/seed-data.json";
+import accessoriesData from "@/data/accessories-data.json";
 
 // Cache tags for revalidation
 export const CACHE_TAGS = {
@@ -18,8 +19,9 @@ export const CACHE_TAGS = {
 export const getProducts = cache(async (): Promise<Product[]> => {
   try {
     // In a real app, this would be a fetch to your API/database
-    // For now, we'll use the seed data with proper validation
-    const validatedProducts = ProductsSchema.parse(seedData.products);
+    // For now, we'll use the seed data and accessories data with proper validation
+    const allProducts = [...seedData.products, ...(accessoriesData?.products || [])];
+    const validatedProducts = ProductsSchema.parse(allProducts);
 
     // Simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 100));

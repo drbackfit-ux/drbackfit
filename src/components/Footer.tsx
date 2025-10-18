@@ -57,7 +57,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/catalog?category=beds"
-                  className="text-footer hover:text-primary-button transition-colors"
+                  className="text-footer hover:text-primary-button hover:bg-primary-button/10 rounded-md px-2 py-1 transition-colors"
                 >
                   Beds
                 </Link>
@@ -65,7 +65,7 @@ const Footer = () => {
               <li>
                 <Link
                   href="/catalog?category=sofas"
-                  className="text-footer hover:text-primary-button transition-colors"
+                  className="text-footer hover:text-primary-button hover:bg-primary-button/10 rounded-md px-2 py-1 transition-colors"
                 >
                   Sofas
                 </Link>
@@ -80,7 +80,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/custom-order"
+                  href="/contact"
                   className="text-footer hover:text-primary-button transition-colors"
                 >
                   Custom Orders
@@ -103,7 +103,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/showroom"
+                  href="/contact"
                   className="text-footer hover:text-primary-button transition-colors"
                 >
                   Visit Showroom

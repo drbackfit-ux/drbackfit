@@ -83,10 +83,10 @@ const cities = [
 
 const Dealers = () => {
   return (
-    <section className="section-padding bg-secondary/30">
+    <section className="">
       <div className="container mx-auto">
         {/* Header */}
-        <div className="text-center mb-12 space-y-4">
+        {/* <div className="text-center mb-12 space-y-4">
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
             Our Dealers
           </h2>
@@ -95,10 +95,15 @@ const Dealers = () => {
             locations throughout India. Each showroom offers personalized
             consultations and the full range of our handcrafted collections.
           </p>
-        </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button className="btn-premium">Find Nearest Dealer</Button>
+            <Button variant="outline">Schedule Virtual Consultation</Button>
+          </div>
+        </div> */}
 
         {/* Cities We Serve */}
-        <div className="text-center mb-16">
+        {/* <div className="text-center mb-16">
           <h3 className="text-2xl font-serif font-semibold text-foreground mb-6">
             We Deal in These Cities
           </h3>
@@ -106,16 +111,16 @@ const Dealers = () => {
             {cities.map((city) => (
               <span
                 key={city}
-                className="px-4 py-2 bg-background rounded-full text-sm font-medium text-foreground border border-border hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="px-4 py-2 bg-background rounded-full text-sm font-medium text-foreground border border-border hover:bg-primary-button hover:text-primary-foreground transition-colors"
               >
                 {city}
               </span>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Dealer Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {/* <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {dealers.map((dealer) => (
             <Card
               key={dealer.id}
@@ -175,10 +180,10 @@ const Dealers = () => {
               </div>
             </Card>
           ))}
-        </div>
+        </div> */}
 
         {/* Call to Action */}
-        <div className="text-center space-y-6">
+        {/* <div className="text-center space-y-6">
           <h3 className="text-2xl font-serif font-semibold text-foreground">
             Can't Find a Dealer Near You?
           </h3>
@@ -190,7 +195,7 @@ const Dealers = () => {
             <Button className="btn-premium">Find Nearest Dealer</Button>
             <Button variant="outline">Schedule Virtual Consultation</Button>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

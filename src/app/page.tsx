@@ -63,7 +63,7 @@ export default async function Home() {
                 variant="outline"
                 className="btn-outline-premium text-base"
               >
-                <Link href="/custom-order">Request Custom Quote</Link>
+                <Link href="/contact">Request Custom Quote</Link>
               </Button>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default async function Home() {
       {/* Bestseller Products Section */}
       <section className="section-padding">
         <div className="container mx-auto">
-          <div className="text-center mb-12 space-y-4">
+          <div className="text-center mb-8 space-y-3">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
               Bestsellers
             </h2>
@@ -83,7 +83,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             {bestsellerProducts.map((product) => (
               <ProductCard key={product.id} {...product} />
             ))}
@@ -102,7 +102,7 @@ export default async function Home() {
       {/* Categories Section */}
       <section className="section-padding bg-secondary/20">
         <div className="container mx-auto">
-          <div className="text-center mb-12 space-y-4">
+          <div className="text-center mb-8 space-y-3">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
               Browse by Category
             </h2>
@@ -112,12 +112,12 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {categories.map((category) => (
               <Link
                 key={category.slug}
                 href={`/catalog?category=${category.slug}`}
-                className="card-premium group hover-lift p-8 text-center space-y-3"
+                className="card-premium group hover-lift p-6 text-center space-y-2"
               >
                 <h3 className="text-2xl font-serif font-semibold text-foreground group-hover:text-primary transition-colors">
                   {category.name}
@@ -136,7 +136,7 @@ export default async function Home() {
       {/* Featured Products */}
       <section className="section-padding">
         <div className="container mx-auto">
-          <div className="text-center mb-12 space-y-4">
+          <div className="text-center mb-8 space-y-3">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
               Featured Collection
             </h2>
@@ -146,13 +146,13 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} {...product} />
             ))}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-8">
             <Button asChild size="lg" className="btn-outline-premium">
               <Link href="/catalog">
                 View Full Catalog <ArrowRight className="ml-2 h-5 w-5" />
@@ -211,15 +211,15 @@ export default async function Home() {
       {/* Testimonials */}
       <section className="section-padding">
         <div className="container mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
               Client Stories
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((testimonial) => (
-              <Card key={testimonial.id} className="p-8 space-y-4 card-premium">
+              <Card key={testimonial.id} className="p-6 space-y-3 card-premium">
                 <div className="flex space-x-1">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 fill-accent text-accent" />
@@ -243,7 +243,7 @@ export default async function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-primary text-primary-foreground">
+      <section className="section-padding bg-secondary text-black-foreground">
         <div className="container mx-auto text-center space-y-6">
           <h2 className="text-4xl md:text-5xl font-serif font-bold">
             Ready to Create Something Special?
@@ -253,11 +253,11 @@ export default async function Home() {
             to bring your vision to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button asChild size="lg" variant="secondary" className="text-base">
-              <Link href="/showroom">Book Showroom Visit</Link>
+            <Button asChild size="lg" variant="secondary" className="text-base border">
+              <Link href="/contact">Book Showroom Visit</Link>
             </Button>
             <Button asChild size="lg" className="text-base btn-premium">
-              <Link href="/custom-order">Start Custom Project</Link>
+              <Link href="/contact">Start Custom Project</Link>
             </Button>
           </div>
         </div>

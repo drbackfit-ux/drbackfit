@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import AddToCartButton from "@/components/AddToCartButton";
+import { WishlistButton } from "@/components/WishlistButton";
 import type { Product } from "@/models/Product";
 
 type ProductCardProps = Omit<
@@ -51,13 +51,18 @@ const ProductCard = ({
 
         {/* Wishlist Button */}
         <div className="absolute top-4 right-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="bg-background/80 backdrop-blur-sm hover:bg-background"
-          >
-            <Heart className="h-5 w-5" />
-          </Button>
+          <WishlistButton
+            product={{
+              id,
+              slug,
+              title,
+              shortDescription,
+              images,
+              priceEstimateMin,
+              priceEstimateMax,
+              tags,
+            }}
+          />
         </div>
       </div>
 

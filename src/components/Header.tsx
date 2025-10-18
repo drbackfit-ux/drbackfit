@@ -7,9 +7,9 @@ import CartIconClient from "@/components/CartIconClient";
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Catalog", path: "/catalog" },
-  { name: "Custom Order", path: "/custom-order" },
+  { name: "Accessories", path: "/accessories" },
+  { name: "Custom Order", path: "/contact" },
   { name: "About", path: "/about" },
-  { name: "Showroom", path: "/showroom" },
   { name: "Contact", path: "/contact" },
 ];
 
@@ -29,7 +29,7 @@ const Header = () => {
           <nav className="hidden lg:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
             {navLinks.map((link) => (
               <Link
-                key={link.path}
+                key={`${link.name}-${link.path}`}
                 href={link.path}
                 className="text-sm font-medium transition-colors text-muted-foreground hover:text-primary"
               >
@@ -43,14 +43,14 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden md:flex"
+              className="hidden md:flex hover:bg-primary-button hover:text-primary-foreground"
               asChild
             >
               <Link href="/search">
                 <Search className="h-5 w-5" />
               </Link>
             </Button>
-            <Button variant="ghost" size="icon" asChild>
+            <Button variant="ghost" size="icon" className="hover:bg-primary-button hover:text-primary-foreground" asChild>
               <Link href="/wishlist">
                 <Heart className="h-5 w-5" />
               </Link>
@@ -58,7 +58,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden md:flex"
+              className="hidden md:flex hover:bg-primary-button hover:text-primary-foreground"
               asChild
             >
               <Link href="/account">
