@@ -31,7 +31,7 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
 
 export const fetchAllProductSlugs = cache(async (): Promise<string[]> => {
   // Always return static slugs during build time or when Firebase is not configured
-  if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && !hasAdminConfig()) {
+  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !hasAdminConfig())) {
     console.log("Using static data for product slugs during build time");
     const seedSlugs = seedData.products.map((p) => p.slug);
     const accessorySlugs = accessoriesData.products.map((p) => p.slug);
@@ -929,7 +929,7 @@ const toProductDetailFallback = (product: Product): ProductDetail => {
 export const fetchProductDetailBySlug = cache(
   async (slug: string): Promise<ProductDetail | null> => {
     // Always use static data during build time or when Firebase is not configured
-    if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && !hasAdminConfig()) {
+    if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !hasAdminConfig())) {
       console.log("Using static data for product detail during build time");
       // First check seed data
       const seedProduct = seedData.products.find((p) => p.slug === slug);
@@ -1016,7 +1016,7 @@ export const fetchSimilarProducts = cache(
     limit = 6
   ): Promise<Product[]> => {
     // Always use static data during build time or when Firebase is not configured
-    if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && !hasAdminConfig()) {
+    if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !hasAdminConfig())) {
       console.log("Using static data for similar products during build time");
       return seedData.products
         .filter((p) => p.category === category && p.id !== excludeProductId)
@@ -1059,7 +1059,7 @@ export const fetchSimilarProducts = cache(
 export const fetchProductReviews = cache(
   async (productId: string, limitCount = 6): Promise<Review[]> => {
     // Always use static data during build time or when Firebase is not configured
-    if (process.env.NEXT_PHASE === 'phase-production-build' || process.env.NODE_ENV === 'production' && !hasAdminConfig()) {
+    if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !hasAdminConfig())) {
       console.log("Using static data for product reviews during build time");
       // Return sample reviews for development
       return [
