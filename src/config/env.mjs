@@ -51,8 +51,8 @@ const EnvSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
   // Admin authentication (server-side only)
-  ADMIN_USERNAME: z.string().min(1),
-  ADMIN_PASSWORD: z.string().min(1),
+  ADMIN_USERNAME: z.string().min(1).optional(),
+  ADMIN_PASSWORD: z.string().min(1).optional(),
 });
 
 // Parse and validate environment variables

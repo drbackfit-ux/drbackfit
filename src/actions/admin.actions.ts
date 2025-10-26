@@ -24,6 +24,14 @@ export async function adminLoginAction(
 
   const { username, password } = parsed.data;
 
+  // Runtime validation: ensure admin credentials are configured
+  if (!env.ADMIN_USERNAME || !env.ADMIN_PASSWORD) {
+    return {
+      ok: false,
+      error: "Admin credentials not configured. Please set ADMIN_USERNAME and ADMIN_PASSWORD environment variables.",
+    };
+  }
+
   // Validate against environment variables
   if (username === env.ADMIN_USERNAME && password === env.ADMIN_PASSWORD) {
     // Set secure HTTP-only cookie
