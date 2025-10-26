@@ -5,7 +5,7 @@ import { App, cert, getApp, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore, Firestore } from "firebase-admin/firestore";
 import { getStorage, Storage } from "firebase-admin/storage";
 
-const hasAdminConfig = () =>
+export const hasAdminConfig = () =>
   Boolean(
     env.FIREBASE_PROJECT_ID &&
       env.FIREBASE_CLIENT_EMAIL &&
