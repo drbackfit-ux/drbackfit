@@ -49,6 +49,10 @@ const EnvSchema = z.object({
   STRIPE_PUBLISHABLE_KEY: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+
+  // Admin authentication (server-side only)
+  ADMIN_USERNAME: z.string().min(1),
+  ADMIN_PASSWORD: z.string().min(1),
 });
 
 // Parse and validate environment variables
@@ -83,6 +87,8 @@ const parsedEnv = EnvSchema.safeParse({
   STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+  ADMIN_USERNAME: process.env.ADMIN_USERNAME,
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
 });
 
 if (!parsedEnv.success) {

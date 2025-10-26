@@ -3,9 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Providers } from "@/app/providers";
+import { LayoutContent } from "./layout-content";
 import "./globals.css";
 
 export const metadata = {
@@ -28,11 +27,7 @@ export default function RootLayout({
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
-                <div className="flex flex-col min-h-screen max-w-full overflow-x-hidden">
-                  <Header />
-                  <main className="flex-1 max-w-full overflow-x-hidden">{children}</main>
-                  <Footer />
-                </div>
+                <LayoutContent>{children}</LayoutContent>
               </TooltipProvider>
             </CartProvider>
           </AuthProvider>

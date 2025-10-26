@@ -2,6 +2,24 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Check if route is an admin route
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isAdminLoginRoute =
+    pathname === "/admin/login" || pathname === "/admin/(auth)/login";
+
+  // If accessing admin route (except login), check for session
+  if (isAdminRoute && !isAdminLoginRoute) {
+    const sessionCookie = request.cookies.get("admin_session");
+
+    // No session found, redirect to login
+    if (!sessionCookie || sessionCookie.value !== "authenticated") {
+      const loginUrl = new URL("/admin/login", request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
   // Add security headers
   const response = NextResponse.next();
 
