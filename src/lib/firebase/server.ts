@@ -17,9 +17,9 @@ let adminApp: App | undefined;
 
 export const getFirebaseAdminApp = (): App => {
   if (!hasAdminConfig()) {
-    throw new Error(
-      "Firebase Admin SDK is not configured. Please set FIREBASE_* env variables."
-    );
+    // During build time or when Firebase is not configured, throw a specific error
+    // that can be caught by the calling functions
+    throw new Error("FIREBASE_NOT_CONFIGURED");
   }
 
   if (adminApp) return adminApp;
@@ -43,5 +43,7 @@ export const getFirebaseAdminApp = (): App => {
   return adminApp;
 };
 
-export const getFirebaseAdminDb = (): Firestore => getFirestore(getFirebaseAdminApp());
-export const getFirebaseAdminStorage = (): Storage => getStorage(getFirebaseAdminApp());
+export const getFirebaseAdminDb = (): Firestore =>
+  getFirestore(getFirebaseAdminApp());
+export const getFirebaseAdminStorage = (): Storage =>
+  getStorage(getFirebaseAdminApp());
