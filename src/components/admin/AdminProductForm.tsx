@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -430,9 +431,11 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {imagePreviewUrls.map((url, index) => (
                     <div key={index} className="relative">
-                      <img
+                      <Image
                         src={url}
                         alt={`Product ${index + 1}`}
+                        width={200}
+                        height={128}
                         className="w-full h-32 object-cover rounded-lg border"
                       />
                       <Button

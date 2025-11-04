@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -151,9 +152,11 @@ export function ProductsSection() {
                 >
                   <div className="flex items-center gap-3">
                     {product.images && product.images.length > 0 && product.images[0] ? (
-                      <img
+                      <Image
                         src={product.images[0]}
                         alt={product.title}
+                        width={48}
+                        height={48}
                         className="w-12 h-12 object-cover rounded-md"
                       />
                     ) : (
