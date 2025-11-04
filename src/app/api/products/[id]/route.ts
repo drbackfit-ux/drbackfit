@@ -6,7 +6,7 @@ const PRODUCTS_COLLECTION = 'products';
 // GET - Get a single product by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     if (!hasAdminConfig()) {
@@ -47,7 +47,7 @@ export async function GET(
 // PUT - Update a product
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     if (!hasAdminConfig()) {
@@ -99,7 +99,7 @@ export async function PUT(
 // DELETE - Delete a product
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     if (!hasAdminConfig()) {
