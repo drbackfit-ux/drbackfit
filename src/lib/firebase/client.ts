@@ -27,18 +27,32 @@ const assertClientConfig = () => {
 };
 
 export const getFirebaseClientApp = (): FirebaseApp => {
-  assertClientConfig();
+  try {
+    assertClientConfig();
 
-  if (getApps().length > 0) {
-    return getApp();
+    if (getApps().length > 0) {
+      console.log("🔥 Firebase app already initialized");
+      return getApp();
+    }
+
+    const config = requiredConfig as Required<typeof requiredConfig>;
+    
+    console.log("🔥 Initializing Firebase app with config:", {
+      projectId: config.projectId,
+      authDomain: config.authDomain,
+    });
+
+    const app = initializeApp({
+      ...config,
+      measurementId: clientEnv.FIREBASE.MEASUREMENT_ID,
+    });
+    
+    console.log("✅ Firebase app initialized successfully");
+    return app;
+  } catch (error) {
+    console.error("❌ Firebase initialization error:", error);
+    throw error;
   }
-
-  const config = requiredConfig as Required<typeof requiredConfig>;
-
-  return initializeApp({
-    ...config,
-    measurementId: clientEnv.FIREBASE.MEASUREMENT_ID,
-  });
 };
 
 export const getFirebaseClientDb = () => getFirestore(getFirebaseClientApp());

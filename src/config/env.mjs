@@ -15,7 +15,7 @@ const EnvSchema = z.object({
 
   // Firebase (server) - optional in dev, required at runtime by admin initializer
   FIREBASE_PROJECT_ID: z.string().optional(),
-  FIREBASE_CLIENT_EMAIL: z.string().email().optional(),
+  FIREBASE_CLIENT_EMAIL: z.string().optional(),
   FIREBASE_PRIVATE_KEY: z.string().optional(),
   FIREBASE_STORAGE_BUCKET: z.string().optional(),
   

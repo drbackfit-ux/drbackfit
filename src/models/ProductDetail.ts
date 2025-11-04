@@ -75,6 +75,14 @@ export const ProductWarrantySchema = z.object({
   description: z.string().min(1),
 });
 
+// Display locations for where product should appear
+export const ProductDisplayLocationsSchema = z.object({
+  homeBestseller: z.boolean().default(false), // Show in Best Seller section on home page
+  homeFeatured: z.boolean().default(false),    // Show in Featured Products section on home page
+  catalog: z.boolean().default(true),          // Show in Catalog page
+  accessories: z.boolean().default(false),     // Show in Accessories page
+});
+
 export const ProductDetailSchema = ProductSchema.extend({
   subtitle: z.string().min(1),
   rating: ProductRatingSchema,
@@ -102,6 +110,7 @@ export const ProductDetailSchema = ProductSchema.extend({
     .default([]),
   overviewPoints: z.array(z.string().min(1)).default([]),
   faqs: z.array(ProductFaqSchema).default([]),
+  displayLocations: ProductDisplayLocationsSchema.optional(),
 });
 
 export type ProductDetail = z.infer<typeof ProductDetailSchema>;
@@ -118,3 +127,4 @@ export type ProductVideoShopping = z.infer<typeof ProductVideoShoppingSchema>;
 export type ProductBreadcrumb = z.infer<typeof ProductBreadcrumbSchema>;
 export type ProductWarranty = z.infer<typeof ProductWarrantySchema>;
 export type ProductFaq = z.infer<typeof ProductFaqSchema>;
+export type ProductDisplayLocations = z.infer<typeof ProductDisplayLocationsSchema>;

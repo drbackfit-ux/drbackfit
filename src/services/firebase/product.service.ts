@@ -14,6 +14,7 @@ import seedData from "@/data/seed-data.json";
 import accessoriesData from "@/data/accessories-data.json";
 
 const PRODUCTS_COLLECTION = "products";
+const PRODUCT_DETAILS_COLLECTION = "productDetails"; // Collection for admin-created products
 const REVIEWS_SUBCOLLECTION = "reviews";
 
 const normalizeProductDocument = (doc: QueryDocumentSnapshot<DocumentData>) =>
@@ -26,7 +27,163 @@ const parseProduct = (doc: QueryDocumentSnapshot<DocumentData>) => {
 
 const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
   const normalized = normalizeProductDocument(doc);
-  return ProductDetailSchema.parse(normalized);
+  const data = doc.data();
+  
+  console.log(`🔧 Parsing product detail for: ${data.title}`);
+  console.log(`📋 Raw data keys:`, Object.keys(data));
+  console.log(`🖼️ Images:`, data.images);
+  console.log(`📦 Video shopping data:`, data.videoShopping);
+  
+  // Add default values for required ProductDetail fields
+  const withDefaults = {
+    ...normalized,
+    // Base Product fields with defaults
+    longDescription: data.longDescription || data.shortDescription || "Premium handcrafted furniture piece",
+    materials: data.materials && data.materials.length > 0 ? data.materials : ["Premium Quality Material"],
+    dimensions: {
+      w: data.dimensions?.w || 100,
+      h: data.dimensions?.h || 80,
+      d: data.dimensions?.d || 90,
+    },
+    priceEstimateMin: normalized.priceEstimateMin || data.pricing?.salePrice || 1,
+    priceEstimateMax: normalized.priceEstimateMax || data.pricing?.mrp || data.pricing?.salePrice || 1,
+    
+    // ProductDetail specific fields
+    subtitle: data.subtitle || data.shortDescription || "Handcrafted Furniture",
+    rating: data.rating || {
+      average: 4.5,
+      count: 0,
+    },
+    pricing: {
+      currency: data.pricing?.currency || "INR",
+      mrp: data.pricing?.mrp || data.pricing?.salePrice || normalized.priceEstimateMax || 1,
+      salePrice: data.pricing?.salePrice || normalized.priceEstimateMin || 1,
+      discountPercent: data.pricing?.discountPercent || 0,
+      savingsAmount: data.pricing?.savingsAmount || 0,
+      couponPrice: data.pricing?.couponPrice,
+      couponCode: data.pricing?.couponCode,
+      couponDescription: data.pricing?.couponDescription,
+      emiText: data.pricing?.emiText,
+      taxInclusiveLabel: data.pricing?.taxInclusiveLabel,
+    },
+    stockStatus: data.stockStatus || {
+      label: "In Stock",
+      subLabel: "Ready to ship",
+      inStock: true,
+    },
+    sizeOptions: data.sizeOptions 
+      ? data.sizeOptions.filter((opt: any) => 
+          opt && 
+          opt.label && 
+          opt.label.trim() && 
+          opt.value && 
+          opt.value.trim()
+        )
+      : [],
+    offers: data.offers 
+      ? data.offers.filter((offer: any) => 
+          offer && 
+          offer.title && 
+          offer.title.trim() && 
+          offer.description && 
+          offer.description.trim()
+        )
+      : [],
+    delivery: data.delivery || {
+      placeholder: "Enter pincode",
+      ctaLabel: "Check",
+      helperText: "Enter your pincode to check delivery options",
+    },
+    videoShopping: {
+      title: (data.videoShopping?.title && data.videoShopping.title.trim()) || "Video Shopping Available",
+      description: (data.videoShopping?.description && data.videoShopping.description.trim()) || "Schedule a video call with our experts",
+      ctaLabel: (data.videoShopping?.ctaLabel && data.videoShopping.ctaLabel.trim()) || "Book Appointment",
+      ctaHref: (data.videoShopping?.ctaHref && data.videoShopping.ctaHref.trim()) || "/contact",
+      imageUrl: (data.videoShopping?.imageUrl && data.videoShopping.imageUrl.trim() && data.videoShopping.imageUrl.startsWith('http')) 
+        ? data.videoShopping.imageUrl.trim()
+        : (data.images && Array.isArray(data.images) && data.images.length > 0 && data.images[0] && data.images[0].trim()) 
+          ? data.images[0].trim()
+          : "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop",
+    },
+    serviceHighlights: data.serviceHighlights 
+      ? data.serviceHighlights.filter((sh: any) => 
+          sh && 
+          sh.title && 
+          sh.title.trim() && 
+          sh.description && 
+          sh.description.trim() &&
+          sh.icon &&
+          sh.icon.trim()
+        )
+      : [
+        {
+          title: "Free Delivery",
+          description: "On all orders",
+          icon: "🚚",
+        },
+        {
+          title: "Warranty",
+          description: "1 year manufacturer warranty",
+          icon: "🛡️",
+        },
+      ],
+    detailSections: data.detailSections 
+      ? data.detailSections.filter((ds: any) => 
+          ds && 
+          ds.id && 
+          ds.id.trim() && 
+          ds.title && 
+          ds.title.trim() &&
+          ds.content &&
+          Array.isArray(ds.content) &&
+          ds.content.length > 0
+        ).map((ds: any) => ({
+          ...ds,
+          content: ds.content.filter((c: string) => c && c.trim())
+        }))
+      : [
+        {
+          id: "description",
+          title: "Description",
+          content: [data.longDescription || data.shortDescription || "Premium handcrafted furniture piece"],
+        },
+      ],
+    warranty: data.warranty || {
+      title: "1 Year Warranty",
+      description: "Manufacturer warranty included",
+    },
+    breadcrumbs: data.breadcrumbs || [
+      { label: "Home", href: "/" },
+      { label: "Catalog", href: "/catalog" },
+      { label: data.title || "Product" },
+    ],
+    ratingSummary: data.ratingSummary || [
+      { label: "5 Star", percentage: 70 },
+      { label: "4 Star", percentage: 20 },
+      { label: "3 Star", percentage: 10 },
+      { label: "2 Star", percentage: 0 },
+      { label: "1 Star", percentage: 0 },
+    ],
+    faq: data.faq 
+      ? data.faq.filter((f: any) => 
+          f && 
+          f.id && 
+          f.id.trim() && 
+          f.question && 
+          f.question.trim() &&
+          f.answer &&
+          f.answer.trim()
+        )
+      : [],
+    displayLocations: data.displayLocations || {
+      homeBestseller: false,
+      homeFeatured: false,
+      catalog: true,
+      accessories: false,
+    },
+  };
+  
+  return ProductDetailSchema.parse(withDefaults);
 };
 
 export const fetchAllProductSlugs = cache(async (): Promise<string[]> => {
@@ -41,11 +198,22 @@ export const fetchAllProductSlugs = cache(async (): Promise<string[]> => {
 
   try {
     const db = getFirebaseAdminDb();
-    const snapshot = await db
+    
+    // Fetch slugs from productDetails collection (admin-created products)
+    const productDetailsSnapshot = await db
+      .collection(PRODUCT_DETAILS_COLLECTION)
+      .select("slug")
+      .get();
+    const productDetailsSlugs = productDetailsSnapshot.docs
+      .map((doc) => doc.data()?.slug as string | undefined)
+      .filter((slug): slug is string => Boolean(slug));
+
+    // Fetch slugs from products collection (legacy)
+    const productsSnapshot = await db
       .collection(PRODUCTS_COLLECTION)
       .select("slug")
       .get();
-    const firestoreSlugs = snapshot.docs
+    const productsSlugs = productsSnapshot.docs
       .map((doc) => doc.data()?.slug as string | undefined)
       .filter((slug): slug is string => Boolean(slug));
 
@@ -54,14 +222,18 @@ export const fetchAllProductSlugs = cache(async (): Promise<string[]> => {
     const accessorySlugs = accessoriesData.products.map((p) => p.slug);
 
     // Combine all slugs and remove duplicates
-    const allSlugs = [...firestoreSlugs, ...seedSlugs, ...accessorySlugs];
+    const allSlugs = [...productDetailsSlugs, ...productsSlugs, ...seedSlugs, ...accessorySlugs];
     return Array.from(new Set(allSlugs));
   } catch (error) {
-    // Check if it's a Firebase configuration error
+    // Always treat as warning - this is expected during development without Firebase
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
     if (error instanceof Error && error.message === "FIREBASE_NOT_CONFIGURED") {
       console.warn("Firebase not configured, falling back to static data");
+    } else if (!errorMessage || errorMessage === '{}' || errorMessage === '[object Object]') {
+      console.warn("Firebase connection issue, using static data for slugs");
     } else {
-      console.error("Error fetching slugs from Firestore:", error);
+      console.warn("Could not fetch slugs from Firebase, using static data:", errorMessage);
     }
 
     // Fallback to static data if Firestore fails
@@ -930,59 +1102,43 @@ export const fetchProductDetailBySlug = cache(
   async (slug: string): Promise<ProductDetail | null> => {
     // Always use static data during build time or when Firebase is not configured
     if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !hasAdminConfig())) {
-      console.log("Using static data for product detail during build time");
-      // First check seed data
-      const seedProduct = seedData.products.find((p) => p.slug === slug);
-      if (seedProduct) {
-        return toProductDetailFallback(seedProduct);
-      }
-
-      // Then check accessories data
-      const accessoryProduct = accessoriesData.products.find(
-        (p) => p.slug === slug
-      );
-      if (accessoryProduct) {
-        return toProductDetailFallback(accessoryProduct);
-      }
-
+      console.log("⚠️ Build time - no Firebase available");
       return null;
     }
 
     try {
-      // First check seed data
-      const seedProduct = seedData.products.find((p) => p.slug === slug);
-      if (seedProduct) {
-        return toProductDetailFallback(seedProduct);
+      // First try productDetails collection (admin-created products)
+      console.log(`🔍 Searching for product with slug: ${slug}`);
+      const detailsSnapshot = await getFirebaseAdminDb()
+        .collection(PRODUCT_DETAILS_COLLECTION)
+        .where("slug", "==", slug)
+        .get();
+
+      if (!detailsSnapshot.empty) {
+        console.log(`✅ Found product in productDetails collection`);
+        const parsed = parseProductDetail(detailsSnapshot.docs[0]);
+        console.log(`✅ Successfully parsed product: ${parsed.title}`);
+        return parsed;
       }
 
-      // Then check accessories data
-      const accessoryProduct = accessoriesData.products.find(
-        (p) => p.slug === slug
-      );
-      if (accessoryProduct) {
-        return toProductDetailFallback(accessoryProduct);
-      }
-
-      // If not found in either, try Firebase
-      const snapshot = await getFirebaseAdminDb()
+      // Then try products collection (legacy)
+      const productsSnapshot = await getFirebaseAdminDb()
         .collection(PRODUCTS_COLLECTION)
         .where("slug", "==", slug)
         .get();
 
-      if (snapshot.empty) {
-        return null;
+      if (!productsSnapshot.empty) {
+        console.log(`✅ Found product in products collection`);
+        return parseProductDetail(productsSnapshot.docs[0]);
       }
 
-      return parseProductDetail(snapshot.docs[0]);
+      // NOT FOUND - No seed data fallback
+      console.log(`❌ Product with slug "${slug}" not found in Firestore`);
+      return null;
     } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message === "FIREBASE_NOT_CONFIGURED"
-      ) {
-        console.warn("Firebase not configured, using static data only");
-        return null;
-      }
-      console.error("Error fetching product:", error);
+      // Log error and return null - NO SEED DATA FALLBACK
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`❌ Error fetching product with slug "${slug}":`, errorMessage);
       return null;
     }
   }
@@ -1037,6 +1193,9 @@ export const fetchSimilarProducts = cache(
         .slice(0, limit)
         .map(parseProduct);
     } catch (error) {
+      // Always treat as warning when Firebase is not configured
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
       if (
         error instanceof Error &&
         error.message === "FIREBASE_NOT_CONFIGURED"
@@ -1044,8 +1203,13 @@ export const fetchSimilarProducts = cache(
         console.warn(
           "Firebase not configured, using static data for similar products"
         );
+      } else if (!errorMessage || errorMessage === '{}' || errorMessage === '[object Object]') {
+        // Empty error or object error - likely Firebase not configured
+        console.warn(
+          "Firebase connection issue, using static data for similar products"
+        );
       } else {
-        console.error("Error fetching similar products:", error);
+        console.warn("Could not fetch similar products from Firebase, using static data:", errorMessage);
       }
 
       return seedData.products
@@ -1146,13 +1310,21 @@ export const fetchProductReviews = cache(
         });
       });
     } catch (error) {
+      // Always treat as warning when Firebase is not configured
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
       if (
         error instanceof Error &&
         error.message === "FIREBASE_NOT_CONFIGURED"
       ) {
         console.warn("Firebase not configured, using sample reviews");
+      } else if (!errorMessage || errorMessage === '{}' || errorMessage === '[object Object]') {
+        // Empty error or object error - likely Firebase not configured
+        console.warn(
+          "Firebase connection issue, using sample reviews"
+        );
       } else {
-        console.error("Error fetching reviews:", error);
+        console.warn("Could not fetch reviews from Firebase, using sample data:", errorMessage);
       }
 
       // Return sample reviews for development

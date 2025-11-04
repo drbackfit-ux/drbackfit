@@ -1,147 +1,221 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { Package, ShoppingCart, Warehouse } from "lucide-react";
-import {
-  LOW_STOCK_ALERTS,
-  TOP_SELLERS,
-  INVENTORY_SKUS,
-  INVENTORY_STATUS_STYLES,
-} from "@/services/admin.service";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Package, Warehouse, Plus, Edit, Trash2 } from "lucide-react";
+import { ProductDetailFormStreamlined } from "./ProductDetailFormStreamlined";
+import type { ProductDetail } from "@/models/ProductDetail";
+import { productDetailService } from "@/services/client/product-detail-client.service";
 
 export function ProductsSection() {
+  const [products, setProducts] = useState<ProductDetail[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<ProductDetail | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadProducts = async () => {
+    setIsLoading(true);
+    try {
+      const fetchedProducts = await productDetailService.getProducts();
+      setProducts(fetchedProducts);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      // Keep empty array on error
+      setProducts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const handleAddProduct = () => {
+    setSelectedProduct(null);
+    setIsEditMode(false);
+    setIsFormOpen(true);
+  };
+
+  const handleEditProduct = (product: ProductDetail) => {
+    setSelectedProduct(product);
+    setIsEditMode(true);
+    setIsFormOpen(true);
+  };
+
+  const handleDeleteProduct = async (product: ProductDetail) => {
+    if (confirm(`Are you sure you want to delete "${product.title}"?`)) {
+      try {
+        if (product.id) {
+          await productDetailService.deleteProduct(product.id);
+          alert('Product deleted successfully');
+          await loadProducts(); // Refresh the list
+        }
+      } catch (error) {
+        alert('Failed to delete product');
+        console.error('Delete error:', error);
+      }
+    }
+  };
+
+  const handleFormSubmit = async (formData: Partial<ProductDetail>) => {
+    try {
+      if (isEditMode && selectedProduct?.id) {
+        await productDetailService.updateProduct(selectedProduct.id, formData);
+        alert('Product updated successfully');
+      } else {
+        await productDetailService.createProduct(formData);
+        alert('Product added successfully');
+      }
+      setIsFormOpen(false);
+      setSelectedProduct(null);
+      await loadProducts(); // Refresh the list
+    } catch (error) {
+      alert('Operation failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      console.error('Form submit error:', error);
+    }
+  };
+
+  const handleFormCancel = () => {
+    setIsFormOpen(false);
+    setSelectedProduct(null);
+  };
+
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm shadow-blue-100/30">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900">
-            Product Overview
-          </h2>
-          <p className="text-sm text-slate-600">
-            Inventory warnings, top movers, and SKU performance.
-          </p>
+    <>
+      <section className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm shadow-blue-100/30">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-slate-900">
+              Product Management
+            </h2>
+            <p className="text-sm text-slate-600">
+              Manage products, inventory, and display settings.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleAddProduct}
+              className="bg-[#1e3a8a] text-white hover:bg-[#1e3a8a]/90"
+            >
+              <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
+              Add Product
+            </Button>
+            <Button
+              variant="ghost"
+              className="h-9 rounded-full border border-slate-200 text-sm text-slate-700 hover:bg-slate-50"
+              onClick={loadProducts}
+              disabled={isLoading}
+            >
+              <Warehouse className="mr-2 h-4 w-4" aria-hidden="true" />
+              Refresh
+            </Button>
+          </div>
         </div>
-        <Button
-          variant="ghost"
-          className="h-9 rounded-full border border-slate-200 text-sm text-slate-700 hover:bg-slate-50"
-        >
-          <Warehouse className="mr-2 h-4 w-4" aria-hidden="true" />
-          Replenishment planner
-        </Button>
-      </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <Card className="border border-slate-100 shadow-sm">
+        {/* Firebase Products Management - Full Width */}
+        <Card className="mt-6 border border-slate-100 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-base font-semibold text-slate-900">
-              Low stock alerts
-            </CardTitle>
-            <Package className="h-5 w-5 text-[#1e3a8a]" aria-hidden="true" />
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {LOW_STOCK_ALERTS.map((alert) => (
-              <div
-                key={alert.sku}
-                className="rounded-xl border border-amber-100 bg-amber-50 p-3"
-              >
-                <p className="text-sm font-semibold text-slate-900">
-                  {alert.name}
-                </p>
-                <p className="text-xs text-slate-500">{alert.sku}</p>
-                <div className="mt-2 flex items-center justify-between text-xs text-slate-600">
-                  <span>{alert.stockLeft} units remaining</span>
-                  <Badge
-                    variant="outline"
-                    className="border-amber-200 bg-white text-amber-700"
-                  >
-                    Reorder at {alert.threshold}
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="border border-slate-100 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base font-semibold text-slate-900">
-              Top sellers
-            </CardTitle>
-            <ShoppingCart
-              className="h-5 w-5 text-[#1e3a8a]"
-              aria-hidden="true"
-            />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {TOP_SELLERS.map((product) => (
-              <div
-                key={product.name}
-                className="flex items-center justify-between"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">
-                    {product.name}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Units sold: {product.units}
-                  </p>
-                </div>
-                <Badge
-                  variant="secondary"
-                  className="bg-blue-100 text-[#1e3a8a]"
-                >
-                  {product.revenue}
-                </Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="border border-slate-100 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-base font-semibold text-slate-900">
-              Inventory by SKU
+              Products ({products.length})
             </CardTitle>
             <Badge
               variant="outline"
               className="border-[#1e3a8a]/40 text-[#1e3a8a]"
             >
-              Auto alerts on
+              Firebase Connected
             </Badge>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {INVENTORY_SKUS.map((item) => (
-              <div
-                key={item.sku}
-                className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 p-3"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">
-                    {item.name}
-                  </p>
-                  <p className="text-xs text-slate-500">{item.sku}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-slate-900">
-                    {item.stock} units
-                  </p>
-                  <span
-                    className={cn(
-                      "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
-                      INVENTORY_STATUS_STYLES[item.status]
-                    )}
-                  >
-                    {item.status}
-                  </span>
-                </div>
+          <CardContent className="space-y-3 max-h-[600px] overflow-y-auto">
+            {isLoading ? (
+              <div className="flex items-center justify-center p-8">
+                <div className="text-sm text-slate-500">Loading products...</div>
               </div>
-            ))}
+            ) : products.length === 0 ? (
+              <div className="flex flex-col items-center justify-center p-8 text-center">
+                <Package className="h-12 w-12 text-slate-300 mb-4" />
+                <p className="text-sm text-slate-500 mb-2">No products found</p>
+                <Button onClick={handleAddProduct} size="sm">
+                  Add your first product
+                </Button>
+              </div>
+            ) : (
+              products.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    {product.images && product.images.length > 0 && product.images[0] ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.title}
+                        className="w-12 h-12 object-cover rounded-md"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-slate-200 rounded-md flex items-center justify-center">
+                        <Package className="w-6 h-6 text-slate-400" />
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {product.title}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-slate-500">
+                        <span>₹{product.pricing?.salePrice || 0}</span>
+                        <span>•</span>
+                        <span>{product.stockStatus?.inStock ? 'In Stock' : 'Out of Stock'}</span>
+                        <span>•</span>
+                        <Badge variant="outline" className="text-xs">
+                          {product.category}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditProduct(product)}
+                      className="h-8 w-8 p-0 text-[#1e3a8a] hover:text-[#1e3a8a]/80 hover:bg-[#1e3a8a]/10"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteProduct(product)}
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-800 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
-      </div>
     </section>
+
+    {/* Product Form Dialog */}
+    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>
+            {isEditMode ? 'Edit Product' : 'Add New Product'}
+          </DialogTitle>
+        </DialogHeader>
+        <ProductDetailFormStreamlined
+          product={selectedProduct as ProductDetail}
+          onSubmit={handleFormSubmit}
+          onCancel={handleFormCancel}
+        />
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

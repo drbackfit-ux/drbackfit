@@ -19,6 +19,7 @@ import {
 } from "@/services/firebase/product.service";
 
 export const revalidate = 0;
+export const dynamicParams = true; // Allow dynamic routes for new products
 
 export async function generateStaticParams() {
   const slugs = await fetchAllProductSlugs();
