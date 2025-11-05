@@ -16,7 +16,7 @@ const COLLECTION_NAME = "productDetails";
 // Get db instance
 const getDb = () => {
   if (!firestoreInstance) {
-    throw new Error("Firestore not initialized. Call initializeServerFirestore first.");
+    throw new Error("FIRESTORE_NOT_INITIALIZED");
   }
   return firestoreInstance;
 };

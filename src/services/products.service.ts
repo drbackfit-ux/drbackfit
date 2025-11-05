@@ -61,6 +61,12 @@ function productDetailToProduct(detail: ProductDetail): Product {
  */
 export const getProducts = cache(async (): Promise<Product[]> => {
   try {
+    // Check if Firebase is configured
+    if (!hasAdminConfig()) {
+      console.warn("⚠️ Firebase not configured on Vercel - returning empty array");
+      return [];
+    }
+
     // Ensure Firestore is initialized before use
     ensureFirestoreInitialized();
     
@@ -80,6 +86,14 @@ export const getProducts = cache(async (): Promise<Product[]> => {
     console.warn("⚠️ No products found in Firestore");
     return [];
   } catch (error) {
+    // Check if it's a Firebase configuration error
+    if (error instanceof Error && 
+        (error.message.includes("FIREBASE_NOT_CONFIGURED") || 
+         error.message.includes("FIRESTORE_NOT_INITIALIZED"))) {
+      console.warn("⚠️ Firebase not available - returning empty array");
+      return [];
+    }
+    
     console.error("❌ Failed to fetch products from Firestore:", error);
     // Return empty array on error - NO SEED DATA
     return [];
@@ -110,6 +124,12 @@ export const getProductsByCategory = cache(
  */
 export const getFeaturedProducts = cache(async (): Promise<Product[]> => {
   try {
+    // Check if Firebase is configured
+    if (!hasAdminConfig()) {
+      console.warn("⚠️ Firebase not configured on Vercel - returning empty array");
+      return [];
+    }
+
     // Ensure Firestore is initialized before use
     ensureFirestoreInitialized();
     
@@ -139,6 +159,14 @@ export const getFeaturedProducts = cache(async (): Promise<Product[]> => {
     console.warn("⚠️ No products marked for home featured section");
     return [];
   } catch (error) {
+    // Check if it's a Firebase configuration error
+    if (error instanceof Error && 
+        (error.message.includes("FIREBASE_NOT_CONFIGURED") || 
+         error.message.includes("FIRESTORE_NOT_INITIALIZED"))) {
+      console.warn("⚠️ Firebase not available - returning empty array");
+      return [];
+    }
+    
     console.error("❌ Failed to fetch featured products:", error);
     return [];
   }
@@ -150,6 +178,12 @@ export const getFeaturedProducts = cache(async (): Promise<Product[]> => {
  */
 export const getBestsellerProducts = cache(async (): Promise<Product[]> => {
   try {
+    // Check if Firebase is configured
+    if (!hasAdminConfig()) {
+      console.warn("⚠️ Firebase not configured on Vercel - returning empty array");
+      return [];
+    }
+
     // Ensure Firestore is initialized before use
     ensureFirestoreInitialized();
     
@@ -179,6 +213,14 @@ export const getBestsellerProducts = cache(async (): Promise<Product[]> => {
     console.warn("⚠️ No products marked for home bestseller section");
     return [];
   } catch (error) {
+    // Check if it's a Firebase configuration error
+    if (error instanceof Error && 
+        (error.message.includes("FIREBASE_NOT_CONFIGURED") || 
+         error.message.includes("FIRESTORE_NOT_INITIALIZED"))) {
+      console.warn("⚠️ Firebase not available - returning empty array");
+      return [];
+    }
+    
     console.error("❌ Failed to fetch bestseller products:", error);
     return [];
   }
@@ -190,6 +232,12 @@ export const getBestsellerProducts = cache(async (): Promise<Product[]> => {
  */
 export const getCatalogProducts = cache(async (): Promise<Product[]> => {
   try {
+    // Check if Firebase is configured
+    if (!hasAdminConfig()) {
+      console.warn("⚠️ Firebase not configured on Vercel - returning empty array");
+      return [];
+    }
+
     // Ensure Firestore is initialized before use
     ensureFirestoreInitialized();
     
@@ -213,6 +261,14 @@ export const getCatalogProducts = cache(async (): Promise<Product[]> => {
     console.warn("⚠️ No products available for catalog");
     return [];
   } catch (error) {
+    // Check if it's a Firebase configuration error
+    if (error instanceof Error && 
+        (error.message.includes("FIREBASE_NOT_CONFIGURED") || 
+         error.message.includes("FIRESTORE_NOT_INITIALIZED"))) {
+      console.warn("⚠️ Firebase not available - returning empty array");
+      return [];
+    }
+    
     console.error("❌ Failed to fetch catalog products:", error);
     return [];
   }
@@ -223,6 +279,12 @@ export const getCatalogProducts = cache(async (): Promise<Product[]> => {
  */
 export const getAccessoriesProducts = cache(async (): Promise<Product[]> => {
   try {
+    // Check if Firebase is configured
+    if (!hasAdminConfig()) {
+      console.warn("⚠️ Firebase not configured on Vercel - returning empty array");
+      return [];
+    }
+
     // Ensure Firestore is initialized before use
     ensureFirestoreInitialized();
     
@@ -252,6 +314,14 @@ export const getAccessoriesProducts = cache(async (): Promise<Product[]> => {
     console.log("⚠️ No products marked for accessories, returning empty array");
     return [];
   } catch (error) {
+    // Check if it's a Firebase configuration error
+    if (error instanceof Error && 
+        (error.message.includes("FIREBASE_NOT_CONFIGURED") || 
+         error.message.includes("FIRESTORE_NOT_INITIALIZED"))) {
+      console.warn("⚠️ Firebase not available - returning empty array");
+      return [];
+    }
+    
     console.error("❌ Failed to fetch accessories products:", error);
     // Return empty array instead of falling back to all products
     return [];

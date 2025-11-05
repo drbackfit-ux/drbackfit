@@ -5,22 +5,32 @@ import { Badge } from "@/components/ui/badge";
 import AddToCartButton from "@/components/AddToCartButton";
 import { WishlistButton } from "@/components/WishlistButton";
 import type { Product } from "@/models/Product";
+import type { ProductDetail } from "@/models/ProductDetail";
 
-type ProductCardProps = Omit<
+type ProductCardProps = (Omit<
   Product,
   "longDescription" | "category" | "materials" | "dimensions" | "leadTimeDays"
->;
+> | ProductDetail) & {
+  priceEstimateMin?: number;
+  priceEstimateMax?: number;
+};
 
-const ProductCard = ({
-  id,
-  slug,
-  title,
-  shortDescription,
-  images,
-  priceEstimateMin,
-  priceEstimateMax,
-  tags,
-}: ProductCardProps) => {
+const ProductCard = (props: ProductCardProps) => {
+  const { id, slug, title, shortDescription, images, tags } = props;
+  
+  // Handle both Product and ProductDetail types
+  let priceMin: number;
+  let priceMax: number;
+  
+  if ('pricing' in props && props.pricing) {
+    // ProductDetail type
+    priceMin = props.pricing.salePrice;
+    priceMax = props.pricing.mrp;
+  } else {
+    // Product type
+    priceMin = props.priceEstimateMin || 0;
+    priceMax = props.priceEstimateMax || priceMin;
+  }
   return (
     <div className="card-premium group hover-lift hover-glow flex flex-col h-full">
       {/* Image Container */}
@@ -58,8 +68,8 @@ const ProductCard = ({
               title,
               shortDescription,
               images,
-              priceEstimateMin,
-              priceEstimateMax,
+              priceEstimateMin: priceMin,
+              priceEstimateMax: priceMax,
               tags,
             }}
           />
@@ -82,11 +92,11 @@ const ProductCard = ({
         <div className="flex items-baseline space-x-2 pt-2">
           <span className="text-sm text-muted-foreground">From</span>
           <span className="text-lg font-semibold text-primary">
-            ${priceEstimateMin.toLocaleString()}
+            ₹{priceMin.toLocaleString('en-IN')}
           </span>
-          {priceEstimateMax > priceEstimateMin && (
+          {priceMax > priceMin && (
             <span className="text-sm text-muted-foreground">
-              - ${priceEstimateMax.toLocaleString()}
+              - ₹{priceMax.toLocaleString('en-IN')}
             </span>
           )}
         </div>

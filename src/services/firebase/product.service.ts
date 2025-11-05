@@ -49,7 +49,7 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
     priceEstimateMax: normalized.priceEstimateMax || data.pricing?.mrp || data.pricing?.salePrice || 1,
     
     // ProductDetail specific fields
-    subtitle: data.subtitle || data.shortDescription || "Handcrafted Furniture",
+    subtitle: (data.subtitle && data.subtitle.trim()) || data.shortDescription || "Handcrafted Furniture",
     rating: data.rating || {
       average: 4.5,
       count: 0,
@@ -66,10 +66,10 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
       emiText: data.pricing?.emiText,
       taxInclusiveLabel: data.pricing?.taxInclusiveLabel,
     },
-    stockStatus: data.stockStatus || {
-      label: "In Stock",
-      subLabel: "Ready to ship",
-      inStock: true,
+    stockStatus: {
+      label: (data.stockStatus?.label && data.stockStatus.label.trim()) || "In Stock",
+      subLabel: (data.stockStatus?.subLabel && data.stockStatus.subLabel.trim()) || "Ready to ship",
+      inStock: data.stockStatus?.inStock !== undefined ? data.stockStatus.inStock : true,
     },
     sizeOptions: data.sizeOptions 
       ? data.sizeOptions.filter((opt: any) => 
@@ -89,10 +89,10 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
           offer.description.trim()
         )
       : [],
-    delivery: data.delivery || {
-      placeholder: "Enter pincode",
-      ctaLabel: "Check",
-      helperText: "Enter your pincode to check delivery options",
+    delivery: {
+      placeholder: (data.delivery?.placeholder && data.delivery.placeholder.trim()) || "Enter pincode",
+      ctaLabel: (data.delivery?.ctaLabel && data.delivery.ctaLabel.trim()) || "Check",
+      helperText: (data.delivery?.helperText && data.delivery.helperText.trim()) || "Enter your pincode to check delivery options",
     },
     videoShopping: {
       title: (data.videoShopping?.title && data.videoShopping.title.trim()) || "Video Shopping Available",
@@ -148,15 +148,22 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
           content: [data.longDescription || data.shortDescription || "Premium handcrafted furniture piece"],
         },
       ],
-    warranty: data.warranty || {
-      title: "1 Year Warranty",
-      description: "Manufacturer warranty included",
+    warranty: {
+      title: (data.warranty?.title && data.warranty.title.trim()) || "1 Year Warranty",
+      description: (data.warranty?.description && data.warranty.description.trim()) || "Manufacturer warranty included",
     },
-    breadcrumbs: data.breadcrumbs || [
-      { label: "Home", href: "/" },
-      { label: "Catalog", href: "/catalog" },
-      { label: data.title || "Product" },
-    ],
+    breadcrumbs: (data.breadcrumbs && Array.isArray(data.breadcrumbs) && data.breadcrumbs.length > 0)
+      ? data.breadcrumbs
+          .filter((bc: any) => bc && bc.label && bc.label.trim())
+          .map((bc: any) => ({
+            label: bc.label.trim(),
+            href: bc.href && bc.href.trim() ? bc.href.trim() : undefined,
+          }))
+      : [
+          { label: "Home", href: "/" },
+          { label: "Catalog", href: "/catalog" },
+          { label: data.title || "Product" },
+        ],
     ratingSummary: data.ratingSummary || [
       { label: "5 Star", percentage: 70 },
       { label: "4 Star", percentage: 20 },
