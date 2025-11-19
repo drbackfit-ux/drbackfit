@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { DraggableImageList } from "@/components/admin/DraggableImageList";
 
 interface ProductDetailFormProps {
   product?: ProductDetail;
@@ -36,13 +37,13 @@ export function ProductDetailForm({
     shortDescription: product?.shortDescription || "",
     longDescription: product?.longDescription || "",
     category: product?.category || "beds",
-    
+
     // Images
     images: product?.images || [""],
-    
+
     // Dimensions
     dimensions: product?.dimensions || { w: 0, h: 0, d: 0 },
-    
+
     // Pricing
     pricing: product?.pricing || {
       currency: "INR",
@@ -56,17 +57,17 @@ export function ProductDetailForm({
       emiText: "",
       taxInclusiveLabel: "Inclusive of all taxes",
     },
-    
+
     // Rating
     rating: product?.rating || { average: 4.5, count: 0 },
-    
+
     // Stock Status
     stockStatus: product?.stockStatus || {
       label: "In Stock",
       subLabel: "Ready to ship",
       inStock: true as boolean,
     },
-    
+
     // Product Details
     priceEstimateMin: product?.priceEstimateMin || 0,
     priceEstimateMax: product?.priceEstimateMax || 0,
@@ -74,25 +75,25 @@ export function ProductDetailForm({
     leadTimeDays: product?.leadTimeDays || 30,
     isCustomAllowed: (product?.isCustomAllowed ?? true) as boolean,
     tags: product?.tags || [""],
-    
+
     // Size Options
     sizeOptions: product?.sizeOptions || [],
-    
+
     // Offers
     offers: product?.offers || [],
-    
+
     // Service Highlights
     serviceHighlights: product?.serviceHighlights || [],
-    
+
     // Detail Sections
     detailSections: product?.detailSections || [],
-    
+
     // Overview Points
     overviewPoints: product?.overviewPoints || [""],
-    
+
     // FAQs
     faqs: product?.faqs || [],
-    
+
     // Video Shopping
     videoShopping: product?.videoShopping || {
       title: "Shop via Video Call",
@@ -101,10 +102,10 @@ export function ProductDetailForm({
       ctaHref: "/contact",
       imageUrl: "",
     },
-    
+
     // Warranty
     warranty: product?.warranty || undefined,
-    
+
     // Breadcrumbs
     breadcrumbs: product?.breadcrumbs || [
       { label: "Home", href: "/" },
@@ -114,7 +115,7 @@ export function ProductDetailForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const productData: Partial<ProductDetail> = {
       id: product?.id,
       ...formData,
@@ -123,7 +124,7 @@ export function ProductDetailForm({
       tags: formData.tags.filter(t => t.trim()),
       overviewPoints: formData.overviewPoints.filter(p => p.trim()),
     };
-    
+
     onSubmit(productData);
   };
 
@@ -143,6 +144,10 @@ export function ProductDetailForm({
       ...formData,
       images: formData.images.filter((_, i) => i !== index),
     });
+  };
+
+  const reorderImages = (newOrder: string[]) => {
+    setFormData({ ...formData, images: newOrder });
   };
 
   // Array field helpers
@@ -408,26 +413,44 @@ export function ProductDetailForm({
             </Button>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {formData.images.map((image, index) => (
-            <div key={index} className="flex gap-2">
-              <Input
-                value={image}
-                onChange={(e) => updateImage(index, e.target.value)}
-                placeholder="https://example.com/image.jpg"
+        <CardContent className="space-y-4">
+          {/* Image URL Inputs */}
+          <div className="space-y-3">
+            {formData.images.map((image, index) => (
+              <div key={index} className="flex gap-2">
+                <Input
+                  value={image}
+                  onChange={(e) => updateImage(index, e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                />
+                {formData.images.length > 1 && (
+                  <Button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Image Previews with Drag-and-Drop */}
+          {formData.images.filter(img => img.trim()).length > 0 && (
+            <div className="space-y-2 pt-4 border-t">
+              <p className="text-sm font-medium">Image Preview & Ordering</p>
+              <p className="text-sm text-muted-foreground">
+                Drag images to reorder them. The first image will be the main product image.
+              </p>
+              <DraggableImageList
+                images={formData.images.filter(img => img.trim())}
+                onReorder={reorderImages}
+                onRemove={removeImage}
               />
-              {formData.images.length > 1 && (
-                <Button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  size="sm"
-                  variant="ghost"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
             </div>
-          ))}
+          )}
         </CardContent>
       </Card>
 
@@ -949,7 +972,7 @@ export function ProductDetailForm({
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <div className="space-y-2 ml-4">
                 <div className="flex items-center justify-between">
                   <Label>Content Points</Label>

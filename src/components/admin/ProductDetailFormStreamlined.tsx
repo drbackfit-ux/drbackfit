@@ -18,6 +18,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import Image from "next/image";
+import { DraggableImageList } from "@/components/admin/DraggableImageList";
 
 interface ProductDetailFormStreamlinedProps {
   product?: ProductDetail;
@@ -31,19 +32,19 @@ export function ProductDetailFormStreamlined({
   onCancel,
 }: ProductDetailFormStreamlinedProps) {
   const { uploadImages, isUploading, uploadProgress, error: uploadError } = useImageUpload();
-  
+
   const [formData, setFormData] = useState({
     // Basic Info - VISIBLE ON PAGE
     title: product?.title || "",
     slug: product?.slug || "",
     category: product?.category || "beds",
-    
+
     // Images - VISIBLE (main image + thumbnails)
     images: product?.images || [""],
-    
+
     // Rating - VISIBLE (shows on page)
     rating: product?.rating || { average: 4.5, count: 0 },
-    
+
     // Pricing - VISIBLE (MRP, Sale Price, Discount, Savings)
     pricing: product?.pricing || {
       currency: "INR",
@@ -57,48 +58,48 @@ export function ProductDetailFormStreamlined({
       emiText: "",
       taxInclusiveLabel: "Inclusive of all taxes",
     },
-    
+
     // Stock Status - VISIBLE (In Stock label)
     stockStatus: product?.stockStatus || {
       label: "In Stock",
       subLabel: "Ready to ship",
       inStock: true as boolean,
     },
-    
+
     // Dimensions - VISIBLE (in specifications section)
     dimensions: product?.dimensions || { w: 0, h: 0, d: 0 },
-    
+
     // Materials - VISIBLE (in specifications section)
     materials: product?.materials || [""],
-    
+
     // Size Options - VISIBLE (dropdown with sizes)
     sizeOptions: product?.sizeOptions || [],
-    
+
     // Offers - VISIBLE (savings card with expandable offers)
     offers: product?.offers || [],
-    
+
     // Service Highlights - VISIBLE (icons below main product)
     serviceHighlights: product?.serviceHighlights || [],
-    
+
     // Detail Sections - VISIBLE (Features accordion)
     detailSections: product?.detailSections || [],
-    
+
     // Care Instructions - VISIBLE (longDescription)
     longDescription: product?.longDescription || "",
-    
+
     // Warranty - VISIBLE (warranty section)
     warranty: product?.warranty || undefined,
-    
+
     // FAQs - VISIBLE (FAQs section)
     faqs: product?.faqs || [],
-    
+
     // Delivery - VISIBLE (pincode check)
     delivery: product?.delivery || {
       placeholder: "Enter pincode",
       ctaLabel: "Check",
       helperText: "",
     },
-    
+
     // REQUIRED BUT NOT DISPLAYED (for API compatibility)
     shortDescription: product?.shortDescription || "",
     priceEstimateMin: product?.priceEstimateMin || 0,
@@ -117,7 +118,7 @@ export function ProductDetailFormStreamlined({
       imageUrl: "",
     },
     ratingSummary: product?.ratingSummary || [],
-    
+
     // Display Locations - NEW (where to show the product)
     displayLocations: product?.displayLocations || {
       homeBestseller: false,
@@ -129,14 +130,14 @@ export function ProductDetailFormStreamlined({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const productData: Partial<ProductDetail> = {
       id: product?.id,
       ...formData,
       images: formData.images.filter(img => img.trim()),
       materials: formData.materials.filter(m => m.trim()),
     };
-    
+
     onSubmit(productData);
   };
 
@@ -171,6 +172,10 @@ export function ProductDetailFormStreamlined({
       ...formData,
       images: formData.images.filter((_, i) => i !== index),
     });
+  };
+
+  const reorderImages = (newOrder: string[]) => {
+    setFormData({ ...formData, images: newOrder });
   };
 
   // Materials Management
@@ -550,7 +555,7 @@ export function ProductDetailFormStreamlined({
               {uploadError}
             </div>
           )}
-          
+
           {formData.images.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg">
               <ImageIcon className="h-12 w-12 text-gray-400 mb-4" />
@@ -567,42 +572,18 @@ export function ProductDetailFormStreamlined({
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {formData.images.map((image, index) => (
-                <div key={index} className="relative group border rounded-lg overflow-hidden">
-                  {image ? (
-                    <>
-                      <div className="aspect-square relative bg-gray-100">
-                        <Image
-                          src={image}
-                          alt={`Product image ${index + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                        {index === 0 ? "Main" : `#${index + 1}`}
-                      </div>
-                      <Button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        size="sm"
-                        variant="destructive"
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </>
-                  ) : (
-                    <div className="aspect-square flex items-center justify-center bg-gray-50">
-                      <ImageIcon className="h-8 w-8 text-gray-400" />
-                    </div>
-                  )}
-                </div>
-              ))}
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Drag images to reorder them. The first image will be the main product image.
+              </p>
+              <DraggableImageList
+                images={formData.images.filter(img => img.trim())}
+                onReorder={reorderImages}
+                onRemove={removeImage}
+              />
             </div>
           )}
-          
+
           <p className="text-xs text-gray-500 mt-2">
             First image will be the main product image. Maximum 5MB per image.
           </p>
@@ -692,7 +673,7 @@ export function ProductDetailFormStreamlined({
                   const mrp = formData.pricing.mrp;
                   const discountPercent = mrp > 0 ? Math.round(((mrp - salePrice) / mrp) * 100) : 0;
                   const savingsAmount = mrp - salePrice;
-                  
+
                   setFormData({
                     ...formData,
                     pricing: {
@@ -1102,7 +1083,7 @@ export function ProductDetailFormStreamlined({
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <div className="space-y-2 ml-4">
                 <div className="flex items-center justify-between">
                   <Label>Content Points</Label>

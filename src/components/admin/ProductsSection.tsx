@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Package, Warehouse, Plus, Edit, Trash2 } from "lucide-react";
+import { Package, Warehouse, Plus, Edit, Trash2, Eye, Copy } from "lucide-react";
 import { ProductDetailFormStreamlined } from "./ProductDetailFormStreamlined";
 import type { ProductDetail } from "@/models/ProductDetail";
 import { productDetailService } from "@/services/client/product-detail-client.service";
@@ -45,6 +45,21 @@ export function ProductsSection() {
   const handleEditProduct = (product: ProductDetail) => {
     setSelectedProduct(product);
     setIsEditMode(true);
+    setIsFormOpen(true);
+  };
+
+  const handleDuplicateProduct = (product: ProductDetail) => {
+    // Create a copy of the product without the ID
+    const duplicatedProduct: ProductDetail = {
+      ...product,
+      id: undefined, // Remove ID so it creates a new product
+      title: `${product.title} (Copy)`,
+      slug: `${product.slug}-copy-${Date.now()}`, // Make slug unique
+    };
+
+    // Open in edit mode with the duplicated product
+    setSelectedProduct(duplicatedProduct);
+    setIsEditMode(false); // Set to false so it creates a new product
     setIsFormOpen(true);
   };
 
@@ -183,6 +198,24 @@ export function ProductsSection() {
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => window.open(`/product/${product.slug}`, '_blank')}
+                      className="h-8 w-8 p-0 text-green-600 hover:text-green-800 hover:bg-green-50"
+                      title="Preview product page"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDuplicateProduct(product)}
+                      className="h-8 w-8 p-0 text-purple-600 hover:text-purple-800 hover:bg-purple-50"
+                      title="Duplicate product"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleEditProduct(product)}
                       className="h-8 w-8 p-0 text-[#1e3a8a] hover:text-[#1e3a8a]/80 hover:bg-[#1e3a8a]/10"
                     >
@@ -202,23 +235,23 @@ export function ProductsSection() {
             )}
           </CardContent>
         </Card>
-    </section>
+      </section>
 
-    {/* Product Form Dialog */}
-    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {isEditMode ? 'Edit Product' : 'Add New Product'}
-          </DialogTitle>
-        </DialogHeader>
-        <ProductDetailFormStreamlined
-          product={selectedProduct as ProductDetail}
-          onSubmit={handleFormSubmit}
-          onCancel={handleFormCancel}
-        />
-      </DialogContent>
-    </Dialog>
+      {/* Product Form Dialog */}
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {isEditMode ? 'Edit Product' : 'Add New Product'}
+            </DialogTitle>
+          </DialogHeader>
+          <ProductDetailFormStreamlined
+            product={selectedProduct as ProductDetail}
+            onSubmit={handleFormSubmit}
+            onCancel={handleFormCancel}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

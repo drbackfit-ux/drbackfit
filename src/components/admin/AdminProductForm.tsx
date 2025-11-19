@@ -28,24 +28,25 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  X, 
-  Upload, 
-  Image as ImageIcon, 
+import {
+  X,
+  Upload,
+  Image as ImageIcon,
   Loader2,
   Plus,
   Minus
 } from 'lucide-react';
-import { 
-  ProductInput, 
-  PRODUCT_SECTIONS, 
+import {
+  ProductInput,
+  PRODUCT_SECTIONS,
   PRODUCT_SECTION_LABELS,
   PRODUCT_CATEGORIES,
-  EcommerceProduct 
+  EcommerceProduct
 } from '@/models/EcommerceProduct';
 import { useProductManagement } from '@/hooks/use-product-management';
 import { useImageUpload } from '@/hooks/use-image-upload';
 import { toast } from 'sonner';
+import { DraggableImageList } from '@/components/admin/DraggableImageList';
 
 // Form validation schema
 const ProductFormSchema = z.object({
@@ -84,7 +85,7 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
   const [currentMaterial, setCurrentMaterial] = useState('');
   const [currentTag, setCurrentTag] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const { addProduct, updateProduct, isLoading } = useProductManagement();
   const { isUploading, uploadProgress } = useImageUpload();
 
@@ -111,7 +112,7 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    
+
     // Validate file types and sizes
     const validFiles = files.filter(file => {
       if (!file.type.startsWith('image/')) {
@@ -127,7 +128,7 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
 
     if (validFiles.length > 0) {
       setSelectedImages(prev => [...prev, ...validFiles]);
-      
+
       // Generate preview URLs
       validFiles.forEach(file => {
         const previewUrl = URL.createObjectURL(file);
@@ -146,6 +147,21 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
       }
       return newUrls;
     });
+  };
+
+  const reorderImages = (newOrder: string[]) => {
+    // Find the mapping between preview URLs and file indices
+    const reorderedFiles: File[] = [];
+
+    newOrder.forEach(url => {
+      const originalIndex = imagePreviewUrls.indexOf(url);
+      if (originalIndex !== -1 && selectedImages[originalIndex]) {
+        reorderedFiles.push(selectedImages[originalIndex]);
+      }
+    });
+
+    setImagePreviewUrls(newOrder);
+    setSelectedImages(reorderedFiles);
   };
 
   const addMaterial = () => {
@@ -251,10 +267,10 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                 <FormItem>
                   <FormLabel>Description *</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Enter detailed product description" 
+                    <Textarea
+                      placeholder="Enter detailed product description"
                       className="min-h-[100px]"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -335,9 +351,9 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                   <FormItem>
                     <FormLabel>Price * ($)</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="0.00" 
+                      <Input
+                        type="number"
+                        placeholder="0.00"
                         {...field}
                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                       />
@@ -357,9 +373,9 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                   <FormItem>
                     <FormLabel>Stock Quantity</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="0" 
+                      <Input
+                        type="number"
+                        placeholder="0"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                       />
@@ -376,9 +392,9 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                   <FormItem>
                     <FormLabel>Lead Time (Days)</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="14" 
+                      <Input
+                        type="number"
+                        placeholder="14"
                         {...field}
                         onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                       />
@@ -392,7 +408,7 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
             {/* Product Images */}
             <div className="space-y-4">
               <Label>Product Images</Label>
-              
+
               {/* Upload Button */}
               <div className="flex items-center gap-4">
                 <Button
@@ -405,7 +421,7 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                   {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                   {isUploading ? 'Uploading...' : 'Select Images'}
                 </Button>
-                
+
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -426,29 +442,17 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                 </div>
               )}
 
-              {/* Image Previews */}
+              {/* Image Previews with Drag-and-Drop */}
               {imagePreviewUrls.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {imagePreviewUrls.map((url, index) => (
-                    <div key={index} className="relative">
-                      <Image
-                        src={url}
-                        alt={`Product ${index + 1}`}
-                        width={200}
-                        height={128}
-                        className="w-full h-32 object-cover rounded-lg border"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
-                        onClick={() => removeImage(index)}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Drag images to reorder them. The first image will be the main product image.
+                  </p>
+                  <DraggableImageList
+                    images={imagePreviewUrls}
+                    onReorder={reorderImages}
+                    onRemove={removeImage}
+                  />
                 </div>
               )}
             </div>
@@ -456,7 +460,7 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
             {/* Materials */}
             <div className="space-y-4">
               <Label>Materials</Label>
-              
+
               <div className="flex gap-2">
                 <Input
                   value={currentMaterial}
@@ -490,7 +494,7 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
             {/* Tags */}
             <div className="space-y-4">
               <Label>Tags</Label>
-              
+
               <div className="flex gap-2">
                 <Input
                   value={currentTag}
@@ -532,9 +536,9 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                     <FormItem>
                       <FormLabel>Width</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="Width" 
+                        <Input
+                          type="number"
+                          placeholder="Width"
                           {...field}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         />
@@ -551,9 +555,9 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                     <FormItem>
                       <FormLabel>Height</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="Height" 
+                        <Input
+                          type="number"
+                          placeholder="Height"
                           {...field}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         />
@@ -570,9 +574,9 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                     <FormItem>
                       <FormLabel>Depth</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="Depth" 
+                        <Input
+                          type="number"
+                          placeholder="Depth"
                           {...field}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         />
@@ -645,7 +649,7 @@ export function AdminProductForm({ product, onSuccess, onCancel }: AdminProductF
                   product ? 'Update Product' : 'Add Product'
                 )}
               </Button>
-              
+
               <Button type="button" variant="outline" onClick={onCancel}>
                 Cancel
               </Button>
