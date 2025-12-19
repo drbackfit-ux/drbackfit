@@ -239,7 +239,8 @@ export function ProductsSection() {
 
       {/* Product Form Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100vw-4px)] h-[calc(100vh-4px)] max-w-[calc(100vw-4px)] max-h-[calc(100vh-4px)] overflow-y-auto p-6">
+
           <DialogHeader>
             <DialogTitle>
               {isEditMode ? 'Edit Product' : 'Add New Product'}

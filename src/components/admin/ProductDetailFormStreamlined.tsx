@@ -1281,6 +1281,39 @@ export function ProductDetailFormStreamlined({
               />
             </div>
           </div>
+
+          <div>
+            <Label htmlFor="deliverablePincodes">Deliverable Pincodes (Optional)</Label>
+            <Textarea
+              id="deliverablePincodes"
+              value={formData.delivery?.deliverablePincodes?.join(', ') || ""}
+              onChange={(e) => {
+                // Parse pincodes - support both comma-separated and line-separated
+                const input = e.target.value;
+                const pincodes = input
+                  .split(/[,\n]+/) // Split by comma or newline
+                  .map(code => code.trim()) // Trim whitespace
+                  .filter(code => code.length > 0); // Remove empty strings
+
+                setFormData({
+                  ...formData,
+                  delivery: {
+                    ...formData.delivery,
+                    placeholder: formData.delivery?.placeholder || "Enter pincode",
+                    ctaLabel: formData.delivery?.ctaLabel || "Check",
+                    helperText: formData.delivery?.helperText || "",
+                    deliverablePincodes: pincodes,
+                  },
+                });
+              }}
+              placeholder="Enter pincodes separated by commas or new lines&#10;Example: 110001, 110002, 110003"
+              rows={4}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {formData.delivery?.deliverablePincodes?.length || 0} pincode(s) entered.
+              Leave empty to allow delivery to all pincodes.
+            </p>
+          </div>
         </CardContent>
       </Card>
 

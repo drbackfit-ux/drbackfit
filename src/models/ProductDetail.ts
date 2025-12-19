@@ -37,6 +37,7 @@ export const ProductDeliverySchema = z.object({
   placeholder: z.string().min(1).default("Enter pincode"),
   ctaLabel: z.string().min(1).default("Check"),
   helperText: z.string().optional(),
+  deliverablePincodes: z.array(z.string()).default([]),
 });
 
 export const ProductServiceHighlightSchema = z.object({

@@ -145,7 +145,7 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <p className="text-sm text-footer">
+          <p className="text-sm text-footer" suppressHydrationWarning>
             © {currentYear} Dr Backfit. All rights reserved.
           </p>
           <div className="flex space-x-6 text-sm">
