@@ -3,33 +3,34 @@
 // This page uses client-side cart context which depends on cookies
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { CreditCard, Lock } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { OrderCreateInput, calculateItemSubtotal } from "@/models/Order";
+import { PaymentMethod } from "@/models/OrderStatus";
 
 export default function Checkout() {
-  const { items, getTotal, clearCart } = useCart();
+  const { items, getTotal, clearCart, isLoaded } = useCart();
+  const { user, firebaseUser } = useAuth();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
+    email: user?.email || "",
     firstName: "",
     lastName: "",
     address: "",
     city: "",
     state: "",
     zipCode: "",
-    phone: "",
-    cardNumber: "",
-    cardName: "",
-    expiry: "",
-    cvv: "",
+    phone: user?.phoneNumber || "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,24 +40,129 @@ export default function Checkout() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success(
-      "Order placed successfully! You'll receive a confirmation email shortly."
-    );
-    clearCart();
-    router.push("/");
+
+    // Check if user is authenticated
+    if (!user || !firebaseUser) {
+      toast.error("Please sign in to place an order");
+      router.push("/sign-in?redirect=/checkout");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Calculate totals
+      const subtotal = getTotal();
+      const shipping = 0; // Free shipping
+      const tax = subtotal * 0.08; // 8% tax
+      const total = subtotal + shipping + tax;
+
+      // Prepare order data
+      const orderData: OrderCreateInput = {
+        customer: {
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+        },
+        shippingAddress: {
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+          country: "US",
+        },
+        items: items.map((item) => ({
+          productId: item.id,
+          title: item.title,
+          slug: item.slug,
+          image: item.image,
+          price: item.price,
+          quantity: item.quantity,
+          subtotal: calculateItemSubtotal(item.price, item.quantity),
+        })),
+        subtotal: Number(subtotal.toFixed(2)),
+        tax: Number(tax.toFixed(2)),
+        shipping: Number(shipping.toFixed(2)),
+        total: Number(total.toFixed(2)),
+        payment: {
+          method: PaymentMethod.COD, // Default to COD as payment gateway is not yet implemented
+        },
+      };
+
+      // Get auth token
+      const token = await firebaseUser.getIdToken();
+
+      console.log("=== Checkout: Creating Order ===");
+      console.log("Order Data:", orderData);
+
+      // Create order via API
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      console.log("API Response Status:", response.status, response.statusText);
+      const text = await response.text();
+      console.log("API Response Text:", text);
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error("Failed to parse API response as JSON:", e);
+        throw new Error(`Server returned non-JSON response: ${response.status} ${response.statusText}`);
+      }
+
+      if (!response.ok) {
+        console.error("Order creation failed:", data);
+        const errorMessage = data.message || data.error || "Failed to create order";
+        const errorDetails = data.details ? JSON.stringify(data.details, null, 2) : "";
+        throw new Error(`${errorMessage}${errorDetails ? `\n\nDetails:\n${errorDetails}` : ""}`);
+      }
+
+      // Success!
+      toast.success("Order placed successfully!");
+      clearCart();
+
+      // Redirect to order confirmation page
+      router.push(
+        `/order-confirmation?orderNumber=${data.order.orderNumber}`
+      );
+    } catch (error) {
+      console.error("=== Checkout Error ===");
+      console.error("Error creating order:", error);
+
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Failed to place order. Please try again.";
+
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Redirect to cart if empty (client-side only)
-  if (typeof window !== "undefined" && items.length === 0) {
-    router.push("/cart");
-    return null;
-  }
+  useEffect(() => {
+    if (isLoaded && items.length === 0) {
+      router.push("/cart");
+    }
+  }, [isLoaded, items, router]);
 
-  // Show loading state during SSR or when cart is empty
-  if (items.length === 0) {
-    return null;
+  // Show loading state during SSR or when cart is empty/loading
+  if (!isLoaded || items.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   const subtotal = getTotal();
@@ -191,72 +297,6 @@ export default function Checkout() {
                   </div>
                 </div>
               </Card>
-
-              {/* Payment Information */}
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-serif font-bold text-foreground">
-                    Payment Information
-                  </h2>
-                  <Lock className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="cardNumber">Card Number *</Label>
-                    <div className="relative">
-                      <Input
-                        id="cardNumber"
-                        name="cardNumber"
-                        value={formData.cardNumber}
-                        onChange={handleChange}
-                        required
-                        placeholder="1234 5678 9012 3456"
-                        maxLength={19}
-                      />
-                      <CreditCard className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="cardName">Name on Card *</Label>
-                    <Input
-                      id="cardName"
-                      name="cardName"
-                      value={formData.cardName}
-                      onChange={handleChange}
-                      required
-                      placeholder="John Doe"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="expiry">Expiry Date *</Label>
-                      <Input
-                        id="expiry"
-                        name="expiry"
-                        value={formData.expiry}
-                        onChange={handleChange}
-                        required
-                        placeholder="MM/YY"
-                        maxLength={5}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="cvv">CVV *</Label>
-                      <Input
-                        id="cvv"
-                        name="cvv"
-                        value={formData.cvv}
-                        onChange={handleChange}
-                        required
-                        placeholder="123"
-                        maxLength={4}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Card>
             </div>
 
             {/* Order Summary */}
@@ -305,8 +345,20 @@ export default function Checkout() {
                   <span className="text-primary">${total.toFixed(2)}</span>
                 </div>
 
-                <Button type="submit" className="w-full btn-premium" size="lg">
-                  Place Order
+                <Button
+                  type="submit"
+                  className="w-full btn-premium"
+                  size="lg"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing Order...
+                    </>
+                  ) : (
+                    "Place Order"
+                  )}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">

@@ -18,7 +18,7 @@ export function revalidateCache(tags: CacheKey | CacheKey[]) {
   const tagArray = Array.isArray(tags) ? tags : [tags];
 
   tagArray.forEach((tag) => {
-    revalidateTag(tag);
+    revalidateTag(tag, 'max');
   });
 }
 

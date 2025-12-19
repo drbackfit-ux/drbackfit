@@ -1,92 +1,160 @@
-# Dr Backfit Atelier - Premium Handcrafted Furniture
+# Dr Backfit - E-Commerce Platform
 
-A Next.js e-commerce application for premium handcrafted furniture.
+A modern, full-stack e-commerce platform built with Next.js 15, Firebase, and TypeScript.
 
-## Features
+## 🚀 Features
 
-- Browse furniture catalog with filtering and sorting
-- Shopping cart functionality
-- Custom order requests
-- Responsive design with Tailwind CSS
-- Modern UI components with Radix UI
+- **Firebase Authentication** with Email OTP and Phone OTP
+- **Product Management** with Firestore and Cloudinary
+- **Admin Panel** for product and user management
+- **Responsive Design** with Tailwind CSS
+- **Type-Safe** with TypeScript
+- **Modern UI** with shadcn/ui components
 
-## Getting Started
+## 📋 Prerequisites
 
-### Prerequisites
+- Node.js 18+ or Bun
+- Firebase project with:
+  - Authentication (Email/Password & Phone)
+  - Firestore Database
+  - Storage (for images)
+- Cloudinary account (for image uploads)
 
-- Node.js 18+ 
-- npm or yarn
+## 🛠️ Installation
 
-### Installation
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd drbackfitt
+   ```
 
-```bash
-npm install
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   bun install
+   ```
 
-### Firebase Configuration
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Fill in your Firebase and Cloudinary credentials in `.env.local`
 
-This project now relies on Firebase for product, review, and media data. Create a `.env.local` file with the following variables:
+4. **Run the development server**
+   ```bash
+   npm run dev
+   # or
+   bun dev
+   ```
 
-```bash
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-app.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=app-id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=optional-measurement-id
+5. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_CLIENT_EMAIL=service-account@your-project.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-FIREBASE_STORAGE_BUCKET=your-app.appspot.com
-```
-
-> The `FIREBASE_PRIVATE_KEY` must retain newline characters. Wrap it in quotes and replace literal `\n` with real newlines or escape sequences (`\\n`) depending on your deployment platform.
-
-### Development
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view the application.
-
-### Build
-
-```bash
-npm run build
-```
-
-### Production
-
-```bash
-npm start
-```
-
-## Tech Stack
-
-- **Framework**: Next.js 14
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI
-- **State Management**: React Context
-- **Forms**: React Hook Form
-- **Notifications**: Sonner
-
-## Project Structure
+## 📁 Project Structure
 
 ```
+drbackfitt/
 ├── src/
-│   ├── app/              # Next.js app directory
+│   ├── app/              # Next.js app router pages
 │   ├── components/       # React components
-│   ├── context/          # React context providers
-│   ├── hooks/            # Custom React hooks
-│   ├── lib/              # Utility functions
-│   └── data/             # Static data
-├── public/               # Static assets
-└── ...config files
+│   │   ├── auth/        # Authentication components
+│   │   └── ui/          # shadcn/ui components
+│   ├── context/         # React context providers
+│   ├── services/        # Firebase services
+│   ├── models/          # TypeScript interfaces
+│   ├── lib/             # Utility functions
+│   └── utils/           # Helper functions
+├── public/              # Static assets
+├── docs/                # Documentation
+└── tests/               # Test files
 ```
 
-## License
+## 🔐 Authentication
 
-All rights reserved.
+The platform supports two authentication methods:
+
+### Email OTP
+- User signs up with email and password
+- Receives verification email
+- Account activated after email verification
+
+### Phone OTP
+- User signs up with phone number and password
+- Receives SMS with 6-digit OTP
+- Account activated after OTP verification
+
+## 📚 Documentation
+
+- **[Firebase Setup Guide](docs/FIREBASE_SETUP_GUIDE.md)** - Configure Firebase services
+- **[Auth Setup Guide](docs/AUTH_SETUP_GUIDE.md)** - Authentication implementation details
+- **[Admin Setup Guide](docs/ADMIN_SETUP_GUIDE.md)** - Admin panel configuration
+- **[Product Management Guide](docs/PRODUCT_MANAGEMENT_GUIDE.md)** - Managing products
+
+## 🧪 Testing
+
+```bash
+# Run unit tests
+npm test
+
+# Run type checking
+npm run type-check
+
+# Run linting
+npm run lint
+
+# Run e2e tests
+npm run test:e2e
+```
+
+## 🚀 Deployment
+
+The application is ready to deploy on Vercel:
+
+1. Push your code to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy!
+
+## 🛡️ Security
+
+- Firebase Authentication for secure user management
+- Firestore security rules for data protection
+- reCAPTCHA for phone authentication
+- Input validation and sanitization
+- Secure session management
+
+## 📦 Tech Stack
+
+- **Framework:** Next.js 15
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **UI Components:** shadcn/ui
+- **Backend:** Firebase (Auth, Firestore, Storage)
+- **Image Management:** Cloudinary
+- **State Management:** React Context
+- **Forms:** React Hook Form
+- **Validation:** Zod
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and type checking
+5. Submit a pull request
+
+## 📄 License
+
+This project is proprietary and confidential.
+
+## 📞 Support
+
+For support, please contact the development team.
+
+---
+
+**Built with ❤️ by the Dr Backfit Team**

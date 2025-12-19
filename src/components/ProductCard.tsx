@@ -17,11 +17,11 @@ type ProductCardProps = (Omit<
 
 const ProductCard = (props: ProductCardProps) => {
   const { id, slug, title, shortDescription, images, tags } = props;
-  
+
   // Handle both Product and ProductDetail types
   let priceMin: number;
   let priceMax: number;
-  
+
   if ('pricing' in props && props.pricing) {
     // ProductDetail type
     priceMin = props.pricing.salePrice;
@@ -103,7 +103,14 @@ const ProductCard = (props: ProductCardProps) => {
 
         {/* Add to Cart Button - Always at bottom */}
         <div className="pt-4">
-          <AddToCartButton productSlug={slug} className="w-full btn-premium" />
+          <AddToCartButton
+            productId={id}
+            productSlug={slug}
+            productTitle={title}
+            productImage={images[0]}
+            productPrice={priceMin}
+            className="w-full btn-premium"
+          />
         </div>
       </div>
     </div>

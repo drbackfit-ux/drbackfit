@@ -16,7 +16,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Account() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading, signOut } = useAuth();
+  const { user, firebaseUser, isAuthenticated, isLoading, signOut } = useAuth();
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
@@ -24,18 +24,72 @@ export default function Account() {
     phone: ""
   });
 
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push('/sign-in');
     } else if (user) {
       setProfileData({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: "(555) 123-4567"
+        firstName: user.firstName ?? "",
+        lastName: user.lastName ?? "",
+        email: user.email ?? "",
+        phone: user.phoneNumber ?? ""
       });
+      fetchOrders();
     }
   }, [isAuthenticated, isLoading, user, router]);
+
+  const fetchOrders = async () => {
+    try {
+      if (!firebaseUser) return;
+      const token = await firebaseUser.getIdToken();
+      const response = await fetch('/api/orders', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setOrders(data.orders);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast.error("Failed to load orders");
+    } finally {
+      setIsLoadingOrders(false);
+    }
+  };
+
+  const handleCancelOrder = async (orderId: string) => {
+    if (!confirm("Are you sure you want to cancel this order?")) return;
+
+    try {
+      if (!firebaseUser) return;
+      const token = await firebaseUser.getIdToken();
+      const response = await fetch(`/api/orders/${orderId}/cancel`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reason: "Cancelled by user via account page" })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Order cancelled successfully");
+        fetchOrders(); // Refresh list
+      } else {
+        toast.error(data.error || "Failed to cancel order");
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      toast.error("Failed to cancel order");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -63,23 +117,6 @@ export default function Account() {
     e.preventDefault();
     toast.success("Profile updated successfully!");
   };
-
-  const orders = [
-    {
-      id: "ORD-001",
-      date: "2024-01-15",
-      status: "Delivered",
-      total: 4200,
-      items: 2
-    },
-    {
-      id: "ORD-002",
-      date: "2024-02-20",
-      status: "In Production",
-      total: 6800,
-      items: 1
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -185,45 +222,64 @@ export default function Account() {
               <h2 className="text-2xl font-serif font-bold text-foreground mb-6">
                 Order History
               </h2>
-              {orders.map((order) => (
-                <Card key={order.id} className="p-6">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-semibold text-foreground">
-                          Order #{order.id}
-                        </h3>
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          order.status === "Delivered" 
-                            ? "bg-green-100 text-green-700" 
-                            : "bg-blue-100 text-blue-700"
-                        }`}>
-                          {order.status}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Placed on {new Date(order.date).toLocaleDateString()}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {order.items} {order.items === 1 ? 'item' : 'items'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="text-sm text-muted-foreground">Total</p>
-                        <p className="text-xl font-bold text-primary">
-                          ${order.total.toLocaleString()}
+              {isLoadingOrders ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Loading orders...</p>
+                </div>
+              ) : orders.length > 0 ? (
+                orders.map((order) => (
+                  <Card key={order.id} className="p-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-semibold text-foreground">
+                            Order #{order.orderNumber}
+                          </h3>
+                          <span className={`text-xs px-2 py-1 rounded-full ${order.status === "delivered"
+                            ? "bg-green-100 text-green-700"
+                            : order.status === "cancelled"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-blue-100 text-blue-700"
+                            }`}>
+                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Placed on {new Date(order.createdAt).toLocaleDateString()}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
                         </p>
                       </div>
-                      <Button variant="outline">
-                        View Details
-                      </Button>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-sm text-muted-foreground">Total</p>
+                          <p className="text-xl font-bold text-primary">
+                            ${order.total.toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          {(order.status === 'pending' || order.status === 'confirmed') && (
+                            <Button
+                              variant="outline"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => handleCancelOrder(order.id)}
+                            >
+                              Cancel
+                            </Button>
+                          )}
+                          <Button variant="outline" asChild>
+                            <Link href={`/order-confirmation?orderNumber=${order.orderNumber}`}>
+                              View Details
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
-
-              {orders.length === 0 && (
+                  </Card>
+                ))
+              ) : (
                 <Card className="p-12 text-center">
                   <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-foreground mb-2">
