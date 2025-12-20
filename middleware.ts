@@ -23,10 +23,10 @@ export function middleware(request: NextRequest) {
   // Add security headers
   const response = NextResponse.next();
 
-  // Content Security Policy
+  // Content Security Policy - includes Firebase domains for authentication
   response.headers.set(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self';"
+    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com https://*.firebaseapp.com;"
   );
 
   // Other security headers
