@@ -16,7 +16,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Account() {
   const router = useRouter();
-  const { user, firebaseUser, isAuthenticated, isLoading, signOut } = useAuth();
+  const { user, firebaseUser, isAuthenticated, isLoading, signOut, updateProfile } = useAuth();
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
@@ -113,9 +113,26 @@ export default function Account() {
     }));
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Profile updated successfully!");
+    setIsSaving(true);
+
+    try {
+      await updateProfile({
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        displayName: `${profileData.firstName} ${profileData.lastName}`,
+        phoneNumber: profileData.phone || null,
+      });
+      toast.success("Profile updated successfully!");
+    } catch (error: any) {
+      console.error("Failed to update profile:", error);
+      toast.error(error.message || "Failed to update profile");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -217,10 +234,10 @@ export default function Account() {
                 <Separator />
 
                 <div className="flex gap-4">
-                  <Button type="submit" className="btn-premium">
-                    Save Changes
+                  <Button type="submit" className="btn-premium" disabled={isSaving}>
+                    {isSaving ? "Saving..." : "Save Changes"}
                   </Button>
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" disabled={isSaving}>
                     Cancel
                   </Button>
                 </div>

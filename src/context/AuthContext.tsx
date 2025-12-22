@@ -23,6 +23,10 @@ interface AuthContextType {
   // Phone password methods
   signInWithPhone: (phoneNumber: string, password: string) => Promise<void>;
 
+  // Profile management
+  updateProfile: (data: Partial<UserProfile>) => Promise<void>;
+  refreshUser: () => Promise<void>;
+
   // Session management
   signOut: () => Promise<void>;
 }
@@ -169,6 +173,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Refresh user profile from Firestore
+  const refreshUser = async () => {
+    if (!firebaseUser) return;
+    try {
+      const profile = await userService.getUserProfile(firebaseUser.uid);
+      setUser(profile);
+    } catch (error) {
+      console.error('Error refreshing user profile:', error);
+    }
+  };
+
+  // Update user profile
+  const updateProfile = async (data: Partial<UserProfile>) => {
+    if (!firebaseUser) throw new Error('Not authenticated');
+    try {
+      await userService.updateUserProfile(firebaseUser.uid, data);
+      // Refresh local state
+      await refreshUser();
+    } catch (error: any) {
+      console.error('Update profile error:', error);
+      throw new Error(error.message || 'Failed to update profile');
+    }
+  };
+
   const signOut = async () => {
     try {
       await authService.signOut();
@@ -191,6 +219,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       sendPhoneOTP,
       verifyPhoneOTPAndCreateAccount,
       signInWithPhone,
+      updateProfile,
+      refreshUser,
       signOut
     }}>
       {children}
