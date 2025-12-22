@@ -26,6 +26,7 @@ export default function Account() {
 
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -112,8 +113,6 @@ export default function Account() {
       [e.target.name]: e.target.value
     }));
   };
-
-  const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
