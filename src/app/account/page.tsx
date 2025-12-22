@@ -133,22 +133,34 @@ export default function Account() {
 
       <div className="container mx-auto px-4 py-12">
         <Tabs defaultValue="profile" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-4 h-auto gap-1 p-1">
+            <TabsTrigger
+              value="profile"
+              className="flex flex-col items-center justify-center gap-1 py-2.5 px-1 text-[10px] sm:text-xs md:flex-row md:gap-2 md:text-sm"
+            >
               <User className="h-4 w-4" />
-              <span className="hidden sm:inline">Profile</span>
+              <span>Profile</span>
             </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-2">
+            <TabsTrigger
+              value="orders"
+              className="flex flex-col items-center justify-center gap-1 py-2.5 px-1 text-[10px] sm:text-xs md:flex-row md:gap-2 md:text-sm"
+            >
               <Package className="h-4 w-4" />
-              <span className="hidden sm:inline">Orders</span>
+              <span>Orders</span>
             </TabsTrigger>
-            <TabsTrigger value="wishlist" className="flex items-center gap-2">
+            <TabsTrigger
+              value="wishlist"
+              className="flex flex-col items-center justify-center gap-1 py-2.5 px-1 text-[10px] sm:text-xs md:flex-row md:gap-2 md:text-sm"
+            >
               <Heart className="h-4 w-4" />
-              <span className="hidden sm:inline">Wishlist</span>
+              <span>Wishlist</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
+            <TabsTrigger
+              value="settings"
+              className="flex flex-col items-center justify-center gap-1 py-2.5 px-1 text-[10px] sm:text-xs md:flex-row md:gap-2 md:text-sm"
+            >
               <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Settings</span>
+              <span>Settings</span>
             </TabsTrigger>
           </TabsList>
 

@@ -32,16 +32,39 @@ export default function MobileMenu({ navLinks }: MobileMenuProps) {
           <nav className="flex flex-col space-y-4 px-4 py-6">
             {navLinks.map((link) => (
               <Link
-                key={link.path}
+                key={`${link.name}-${link.path}`}
                 href={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`text-base font-medium transition-colors hover:text-primary ${
-                  isActive(link.path) ? "text-primary" : "text-muted-foreground"
-                }`}
+                className={`text-base font-medium transition-colors hover:text-primary ${isActive(link.path) ? "text-primary" : "text-muted-foreground"
+                  }`}
               >
                 {link.name}
               </Link>
             ))}
+
+            {/* Separator */}
+            <div className="border-t border-border my-2" />
+
+            {/* Account & Search Links */}
+            <Link
+              href="/search"
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center gap-3 text-base font-medium transition-colors hover:text-primary ${isActive("/search") ? "text-primary" : "text-muted-foreground"
+                }`}
+            >
+              <Search className="h-5 w-5" />
+              Search
+            </Link>
+
+            <Link
+              href="/account"
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center gap-3 text-base font-medium transition-colors hover:text-primary ${isActive("/account") ? "text-primary" : "text-muted-foreground"
+                }`}
+            >
+              <User className="h-5 w-5" />
+              My Account
+            </Link>
           </nav>
         </div>
       )}
