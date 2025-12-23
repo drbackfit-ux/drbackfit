@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -17,8 +17,9 @@ type Step = 'method' | 'credentials';
 
 export default function SignIn() {
   const router = useRouter();
-  const { signInWithEmail, signInWithPhone } = useAuth();
+  const { signInWithEmail, signInWithPhone, isAuthenticated, isLoading: authLoading } = useAuth();
 
+  // All hooks must be declared before any conditional returns
   const [step, setStep] = useState<Step>('method');
   const [loginMethod, setLoginMethod] = useState<LoginMethod>('email');
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +29,22 @@ export default function SignIn() {
     phoneNumber: "",
     password: ""
   });
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push("/account");
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  // Show loading state while checking authentication
+  if (authLoading || isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-secondary/10">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
