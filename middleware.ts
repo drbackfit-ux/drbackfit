@@ -23,10 +23,18 @@ export function middleware(request: NextRequest) {
   // Add security headers
   const response = NextResponse.next();
 
-  // Content Security Policy - includes Firebase domains for authentication
+  // Content Security Policy - includes Firebase domains and Google reCAPTCHA for authentication
   response.headers.set(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com https://*.firebaseapp.com;"
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://apis.google.com",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https: blob:",
+      "font-src 'self' data:",
+      "frame-src 'self' https://www.google.com https://*.firebaseapp.com",
+      "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com https://*.firebaseapp.com https://www.google.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com",
+    ].join("; ")
   );
 
   // Other security headers
