@@ -98,10 +98,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Email signin
   const signInWithEmail = async (email: string, password: string) => {
     try {
-      await authService.signInWithEmail(email, password);
+      const userCredential = await authService.signInWithEmail(email, password);
+
+      // Verify user profile exists in Firestore
+      if (userCredential?.user) {
+        const profile = await userService.getUserProfile(userCredential.user.uid);
+        if (!profile) {
+          // User exists in Firebase Auth but not in Firestore - sign them out
+          await authService.signOut();
+          throw new Error('Account not found. Please sign up first.');
+        }
+      }
     } catch (error: any) {
-      console.error('Email signin error:', error);
-      throw new Error(error.message || 'Failed to sign in');
+      // Re-throw custom errors we created (like 'Account not found')
+      if (error?.message?.includes('Account not found') ||
+        error?.message?.includes('Please sign up')) {
+        throw error;
+      }
+
+      // Handle specific Firebase error codes
+      const errorCode = error?.code || '';
+
+      if (errorCode === 'auth/user-not-found') {
+        throw new Error('No account found with this email. Please sign up first.');
+      }
+      if (errorCode === 'auth/invalid-credential') {
+        throw new Error('Invalid email or password. Please check your credentials or sign up if you don\'t have an account.');
+      }
+      if (errorCode === 'auth/wrong-password') {
+        throw new Error('Incorrect password. Please try again.');
+      }
+      if (errorCode === 'auth/invalid-email') {
+        throw new Error('Please enter a valid email address.');
+      }
+      if (errorCode === 'auth/too-many-requests') {
+        throw new Error('Too many failed attempts. Please try again later.');
+      }
+      // For any error that contains "not found" or "invalid" in the message
+      if (error?.message?.toLowerCase().includes('not found') ||
+        error?.message?.toLowerCase().includes('invalid')) {
+        throw new Error('Invalid credentials. Please check your email and password or sign up if you don\'t have an account.');
+      }
+      throw new Error(error?.message || 'Failed to sign in. Please try again.');
     }
   };
 
@@ -163,13 +201,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Convert phone to pseudo email
       const pseudoEmail = phoneToEmail(phoneNumber);
       // Sign in with the pseudo email and password
-      await authService.signInWithEmail(pseudoEmail, password);
-    } catch (error: any) {
-      console.error('Phone signin error:', error);
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-        throw new Error('Invalid phone number or password');
+      const userCredential = await authService.signInWithEmail(pseudoEmail, password);
+
+      // Verify user profile exists in Firestore
+      if (userCredential?.user) {
+        const profile = await userService.getUserProfile(userCredential.user.uid);
+        if (!profile) {
+          // User exists in Firebase Auth but not in Firestore - sign them out
+          await authService.signOut();
+          throw new Error('Account not found. Please sign up first.');
+        }
       }
-      throw new Error(error.message || 'Failed to sign in');
+    } catch (error: any) {
+      // Re-throw custom errors we created (like 'Account not found')
+      if (error?.message?.includes('Account not found') ||
+        error?.message?.includes('Please sign up')) {
+        throw error;
+      }
+
+      // Handle specific Firebase error codes
+      const errorCode = error?.code || '';
+
+      if (errorCode === 'auth/user-not-found') {
+        throw new Error('No account found with this phone number. Please sign up first.');
+      }
+      if (errorCode === 'auth/invalid-credential') {
+        throw new Error('Invalid phone number or password. Please check your credentials or sign up if you don\'t have an account.');
+      }
+      if (errorCode === 'auth/wrong-password') {
+        throw new Error('Incorrect password. Please try again.');
+      }
+      if (errorCode === 'auth/too-many-requests') {
+        throw new Error('Too many failed attempts. Please try again later.');
+      }
+      // For any error that contains "not found" or "invalid" in the message
+      if (error?.message?.toLowerCase().includes('not found') ||
+        error?.message?.toLowerCase().includes('invalid')) {
+        throw new Error('Invalid credentials. Please check your phone number and password or sign up if you don\'t have an account.');
+      }
+      throw new Error(error?.message || 'Failed to sign in. Please try again.');
     }
   };
 

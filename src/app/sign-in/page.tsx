@@ -73,11 +73,10 @@ export default function SignIn() {
         await signInWithPhone(formData.phoneNumber, formData.password);
       }
 
-      toast.success("Welcome back!");
+      toast.success("Signed in successfully!");
       router.push("/account");
     } catch (error: any) {
-      console.error('Sign in error:', error);
-      toast.error(error.message || "Invalid credentials");
+      toast.error(error?.message || "Invalid credentials. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +90,7 @@ export default function SignIn() {
           <>
             <div className="text-center space-y-2">
               <h1 className="text-3xl font-serif font-bold text-foreground">
-                Welcome Back
+                Sign In
               </h1>
               <p className="text-muted-foreground">
                 Choose how you want to sign in
