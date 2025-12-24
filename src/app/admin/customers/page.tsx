@@ -142,9 +142,10 @@ export default function CustomersPage() {
     }
   };
 
-  const formatDate = (date: Date | string | null | undefined) => {
+  const formatDate = (date: Date | string | null | undefined | { toDate: () => Date }) => {
     if (!date) return "N/A";
-    const d = new Date(date);
+    // Handle Firestore Timestamp objects
+    const d = typeof date === 'object' && 'toDate' in date ? date.toDate() : new Date(date as Date | string);
     return d.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
@@ -152,9 +153,10 @@ export default function CustomersPage() {
     });
   };
 
-  const formatTime = (date: Date | string | null | undefined) => {
+  const formatTime = (date: Date | string | null | undefined | { toDate: () => Date }) => {
     if (!date) return "";
-    const d = new Date(date);
+    // Handle Firestore Timestamp objects
+    const d = typeof date === 'object' && 'toDate' in date ? date.toDate() : new Date(date as Date | string);
     return d.toLocaleTimeString("en-IN", {
       hour: "2-digit",
       minute: "2-digit",
