@@ -191,7 +191,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
     } catch (error: any) {
       console.error('Phone signup error:', error);
-      throw new Error(error.message || 'Failed to create account');
+
+      // Handle specific Firebase error codes
+      if (error?.code === 'auth/email-already-in-use') {
+        throw new Error('This phone number is already registered. Please sign in instead.');
+      }
+      if (error?.code === 'auth/invalid-verification-code') {
+        throw new Error('Invalid OTP. Please check and try again.');
+      }
+      if (error?.code === 'auth/code-expired') {
+        throw new Error('OTP has expired. Please request a new one.');
+      }
+
+      throw new Error(error?.message || 'Failed to create account. Please try again.');
     }
   };
 
