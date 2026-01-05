@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Search, Heart, User } from "lucide-react";
+import { Search, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MobileMenu from "@/components/MobileMenu";
 import CartIconClient from "@/components/CartIconClient";
+import AccountIconClient from "@/components/AccountIconClient";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -55,16 +56,7 @@ const Header = () => {
                 <Heart className="h-5 w-5" />
               </Link>
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hidden md:flex hover:bg-primary-button hover:text-primary-foreground"
-              asChild
-            >
-              <Link href="/account">
-                <User className="h-5 w-5" />
-              </Link>
-            </Button>
+            <AccountIconClient />
 
             <CartIconClient />
 

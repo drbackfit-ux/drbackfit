@@ -1,5 +1,21 @@
 import { Timestamp } from 'firebase/firestore';
 
+// Address interface for saved shipping addresses
+export interface Address {
+  id: string;
+  label: string;          // e.g., "Home", "Office", "Other"
+  firstName: string;
+  lastName: string;
+  address: string;        // Street address
+  city: string;
+  state: string;
+  zipCode: string;
+  phone: string;
+  isDefault: boolean;
+  createdAt?: Date | Timestamp;
+  updatedAt?: Date | Timestamp;
+}
+
 export interface UserProfile {
   uid: string;
   email: string | null;
@@ -15,6 +31,8 @@ export interface UserProfile {
   updatedAt: Timestamp | Date;
   lastLoginAt: Timestamp | Date;
   isActive: boolean;
+  role?: 'user' | 'admin';
+  addresses?: Address[];  // User's saved shipping addresses
 }
 
 export interface SignUpData {

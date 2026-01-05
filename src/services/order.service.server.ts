@@ -10,6 +10,7 @@ import {
 } from "@/models/Order";
 import { OrderStatus, PaymentStatus } from "@/models/OrderStatus";
 import { generateOrderNumber } from "./orderNumber.service.server";
+import { emailService } from "./email.service.server";
 
 const ORDERS_COLLECTION = "orders";
 const USERS_COLLECTION = "users";
@@ -124,6 +125,12 @@ export const orderServiceServer = {
             const order = convertFirestoreDocToOrder(createdOrderDoc);
 
             console.log("Order created successfully:", order.orderNumber);
+
+            // Send order confirmation email (async, non-blocking)
+            emailService.sendOrderConfirmationEmail(order).catch((err) => {
+                console.error("Failed to send order confirmation email:", err);
+            });
+
             return order;
         } catch (error) {
             console.error("Error creating order:", error);
@@ -363,11 +370,189 @@ export const orderServiceServer = {
             // But convertFirestoreDocToOrder expects a DocumentSnapshot.
             // Let's just fetch it again to be sure we return the correct type.
             const updatedOrderDoc = await orderRef.get();
-            return convertFirestoreDocToOrder(updatedOrderDoc);
+            const cancelledOrder = convertFirestoreDocToOrder(updatedOrderDoc);
+
+            // Send order cancellation email (async, non-blocking)
+            emailService.sendOrderCancellationEmail(cancelledOrder, reason).catch((err) => {
+                console.error("Failed to send order cancellation email:", err);
+            });
+
+            return cancelledOrder;
 
         } catch (error) {
             console.error("Error cancelling order:", error);
             throw error; // Re-throw to be handled by API route
+        }
+    },
+
+    /**
+     * Get all orders (admin only)
+     */
+    async getAllOrders(
+        params: { page?: number; limit?: number; status?: string; sortBy?: string; sortOrder?: string; search?: string } = {}
+    ): Promise<{ orders: Order[]; hasMore: boolean; total: number }> {
+        try {
+            const db = getFirebaseAdminDb();
+
+            const {
+                limit: pageLimit = 20,
+                status = "all",
+                sortBy = "createdAt",
+                sortOrder = "desc",
+                search = "",
+            } = params;
+
+            // Build query
+            let queryRef: FirebaseFirestore.Query = db.collection(ORDERS_COLLECTION);
+
+            // Add status filter if not "all"
+            if (status !== "all") {
+                queryRef = queryRef.where("status", "==", status);
+            }
+
+            // Execute query with ordering
+            const orderedQuery = queryRef.orderBy(sortBy, sortOrder as "asc" | "desc").limit(pageLimit + 1);
+            const querySnapshot = await orderedQuery.get();
+
+            let orders = querySnapshot.docs.map(convertFirestoreDocToOrder);
+
+            // Apply search filter in memory (for order number or customer email)
+            if (search) {
+                const searchLower = search.toLowerCase();
+                orders = orders.filter(order =>
+                    order.orderNumber.toLowerCase().includes(searchLower) ||
+                    order.customer.email.toLowerCase().includes(searchLower) ||
+                    order.customer.firstName.toLowerCase().includes(searchLower) ||
+                    order.customer.lastName.toLowerCase().includes(searchLower)
+                );
+            }
+
+            const hasMore = orders.length > pageLimit;
+            orders = orders.slice(0, pageLimit);
+
+            // Get total count (for display purposes)
+            const countSnapshot = await db.collection(ORDERS_COLLECTION).count().get();
+            const total = countSnapshot.data().count;
+
+            return { orders, hasMore, total };
+        } catch (error) {
+            console.error("Error fetching all orders:", error);
+            throw new Error(
+                `Failed to fetch orders: ${error instanceof Error ? error.message : "Unknown error"}`
+            );
+        }
+    },
+
+    /**
+     * Update order status (admin only)
+     */
+    async updateOrderStatus(
+        orderId: string,
+        newStatus: string,
+        note?: string,
+        updatedBy?: string
+    ): Promise<Order> {
+        try {
+            const db = getFirebaseAdminDb();
+            const orderRef = db.collection(ORDERS_COLLECTION).doc(orderId);
+
+            const orderDoc = await orderRef.get();
+            if (!orderDoc.exists) {
+                throw new Error("Order not found");
+            }
+
+            const orderData = orderDoc.data();
+            if (!orderData) throw new Error("Order data is undefined");
+
+            // Create new status history entry with Firestore Timestamp for arrayUnion compatibility
+            const statusHistoryEntry = {
+                status: newStatus,
+                timestamp: Timestamp.fromDate(new Date()),
+                note: note || null,
+                updatedBy: updatedBy || null,
+            };
+
+            // Update order
+            await orderRef.update({
+                status: newStatus,
+                statusHistory: FieldValue.arrayUnion(statusHistoryEntry),
+                updatedAt: FieldValue.serverTimestamp(),
+            });
+
+            // Also update the summary in user's subcollection if possible
+            const userId = orderData.userId;
+            if (userId) {
+                const userOrderQuery = await db
+                    .collection(USERS_COLLECTION)
+                    .doc(userId)
+                    .collection("orders")
+                    .where("orderId", "==", orderId)
+                    .limit(1)
+                    .get();
+
+                if (!userOrderQuery.empty) {
+                    await userOrderQuery.docs[0].ref.update({
+                        status: newStatus,
+                    });
+                }
+            }
+
+            // Fetch updated order
+            const updatedOrderDoc = await orderRef.get();
+            const updatedOrder = convertFirestoreDocToOrder(updatedOrderDoc);
+
+            // Send order status update email (async, non-blocking)
+            emailService.sendOrderStatusUpdateEmail(
+                updatedOrder,
+                newStatus,
+                updatedOrder.trackingNumber
+            ).catch((err) => {
+                console.error("Failed to send order status update email:", err);
+            });
+
+            return updatedOrder;
+        } catch (error) {
+            console.error("Error updating order status:", error);
+            throw new Error(
+                `Failed to update order status: ${error instanceof Error ? error.message : "Unknown error"}`
+            );
+        }
+    },
+
+    /**
+     * Get order statistics (admin only)
+     */
+    async getOrderStatistics(): Promise<{
+        totalOrders: number;
+        totalRevenue: number;
+        averageOrderValue: number;
+        ordersByStatus: Record<string, number>;
+    }> {
+        try {
+            const db = getFirebaseAdminDb();
+            const querySnapshot = await db.collection(ORDERS_COLLECTION).get();
+            const orders = querySnapshot.docs.map(convertFirestoreDocToOrder);
+
+            const totalOrders = orders.length;
+            const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+            const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+            const ordersByStatus: Record<string, number> = {};
+            orders.forEach((order) => {
+                ordersByStatus[order.status] = (ordersByStatus[order.status] || 0) + 1;
+            });
+
+            return {
+                totalOrders,
+                totalRevenue,
+                averageOrderValue,
+                ordersByStatus,
+            };
+        } catch (error) {
+            console.error("Error getting order statistics:", error);
+            throw new Error(
+                `Failed to get order statistics: ${error instanceof Error ? error.message : "Unknown error"}`
+            );
         }
     },
 };

@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper: Check if user is admin
+    // Checks for custom claim 'admin' OR 'role: admin' in user document
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.admin == true || 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    // Helper: Check if user owns the document
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId) || isAdmin();
+      
+      // Allow users to create their own profile during signup
+      allow create: if isOwner(userId);
+      
+      // Subcollections (like addresses, orders summary)
+      match /{document=**} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // Orders collection
+    match /orders/{orderId} {
+      // Admin can do everything
+      allow read, write: if isAdmin();
+      
+      // Users can create orders
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      
+      // Users can read their own orders
+      allow read: if isOwner(resource.data.userId);
+      
+      // Users cannot update/delete orders (only admin can update status)
+      allow update, delete: if false; 
+    }
+    
+    // Products collection (assuming public read, admin write)
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Mail collection - Firebase Trigger Email extension
+    // Only Firebase Admin SDK can write (server-side)
+    match /mail/{mailId} {
+      allow read, write: if false;
+    }
+  }
+}

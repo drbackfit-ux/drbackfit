@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,8 @@ type Step = 'method' | 'credentials';
 
 export default function SignIn() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/account';
   const { signInWithEmail, signInWithPhone, isAuthenticated, isLoading: authLoading } = useAuth();
 
   // All hooks must be declared before any conditional returns
@@ -33,9 +35,9 @@ export default function SignIn() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      router.push("/account");
+      router.push(redirectUrl);
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated, authLoading, router, redirectUrl]);
 
   // Show loading state while checking authentication
   if (authLoading || isAuthenticated) {
@@ -74,7 +76,7 @@ export default function SignIn() {
       }
 
       toast.success("Signed in successfully!");
-      router.push("/account");
+      router.push(redirectUrl);
     } catch (error: any) {
       toast.error(error?.message || "Invalid credentials. Please try again.");
     } finally {

@@ -12,10 +12,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { indianStates, getCitiesByState, getPinCodeByCity } from "@/data/india-locations";
 import { OrderCreateInput, calculateItemSubtotal } from "@/models/Order";
 import { PaymentMethod } from "@/models/OrderStatus";
+import { userService } from "@/services/user.service";
+import { Address } from "@/models/user.model";
 
 export default function Checkout() {
   const { items, getTotal, clearCart, isLoaded } = useCart();
@@ -33,10 +44,100 @@ export default function Checkout() {
     phone: user?.phoneNumber || "",
   });
 
+  // Saved addresses state
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [showSavedAddresses, setShowSavedAddresses] = useState(true);
+  const [saveNewAddress, setSaveNewAddress] = useState(false);
+  const [newAddressLabel, setNewAddressLabel] = useState("Home");
+
+  // Fetch saved addresses on load
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      if (!firebaseUser) {
+        setIsLoadingAddresses(false);
+        return;
+      }
+      try {
+        const addresses = await userService.getAddresses(firebaseUser.uid);
+        setSavedAddresses(addresses);
+
+        // Auto-select default address if available
+        const defaultAddr = addresses.find(addr => addr.isDefault);
+        if (defaultAddr) {
+          selectAddress(defaultAddr);
+        }
+      } catch (error) {
+        console.error("Error fetching addresses:", error);
+      } finally {
+        setIsLoadingAddresses(false);
+      }
+    };
+
+    fetchAddresses();
+  }, [firebaseUser]);
+
+  // Select an address and populate form
+  const selectAddress = (address: Address) => {
+    setSelectedAddressId(address.id);
+    setFormData(prev => ({
+      ...prev,
+      firstName: address.firstName,
+      lastName: address.lastName,
+      address: address.address,
+      city: address.city,
+      state: address.state,
+      zipCode: address.zipCode,
+      phone: address.phone,
+    }));
+  };
+
+  // Clear selection and form for entering new address
+  const enterNewAddress = () => {
+    setSelectedAddressId(null);
+    setFormData(prev => ({
+      ...prev,
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      phone: user?.phoneNumber || "",
+    }));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedAddressId(null); // Clear selection when manually editing
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
+    }));
+  };
+
+  // Get available cities based on selected state
+  const availableCities = getCitiesByState(formData.state);
+
+  // Handle state change - reset city and zipCode
+  const handleStateChange = (value: string) => {
+    setSelectedAddressId(null); // Clear selection when manually editing
+    setFormData((prev) => ({
+      ...prev,
+      state: value,
+      city: "",
+      zipCode: "",
+    }));
+  };
+
+  // Handle city change - auto-populate zipCode
+  const handleCityChange = (value: string) => {
+    setSelectedAddressId(null); // Clear selection when manually editing
+    const pinCode = getPinCodeByCity(formData.state, value);
+    setFormData((prev) => ({
+      ...prev,
+      city: value,
+      zipCode: pinCode,
     }));
   };
 
@@ -50,6 +151,32 @@ export default function Checkout() {
       return;
     }
 
+    // Validate required shipping fields
+    if (!formData.firstName || !formData.lastName) {
+      toast.error("Please enter your name");
+      return;
+    }
+    if (!formData.address) {
+      toast.error("Please enter your street address");
+      return;
+    }
+    if (!formData.state) {
+      toast.error("Please select a state");
+      return;
+    }
+    if (!formData.city) {
+      toast.error("Please select a city");
+      return;
+    }
+    if (!formData.zipCode) {
+      toast.error("Please ensure city is selected for PIN code");
+      return;
+    }
+    if (!formData.phone) {
+      toast.error("Please enter your phone number");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -58,6 +185,26 @@ export default function Checkout() {
       const shipping = 0; // Free shipping
       const tax = subtotal * 0.08; // 8% tax
       const total = subtotal + shipping + tax;
+
+      // Save new address if user opted to
+      if (saveNewAddress && !selectedAddressId) {
+        try {
+          await userService.addAddress(firebaseUser.uid, {
+            label: newAddressLabel,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zipCode: formData.zipCode,
+            phone: formData.phone,
+            isDefault: savedAddresses.length === 0
+          });
+        } catch (error) {
+          console.error("Error saving address:", error);
+          // Don't fail the order, just log the error
+        }
+      }
 
       // Prepare order data
       const orderData: OrderCreateInput = {
@@ -72,7 +219,7 @@ export default function Checkout() {
           city: formData.city,
           state: formData.state,
           zipCode: formData.zipCode,
-          country: "US",
+          country: "IN",
         },
         items: items.map((item) => ({
           productId: item.id,
@@ -207,6 +354,93 @@ export default function Checkout() {
                 </div>
               </Card>
 
+              {/* Saved Addresses Section */}
+              {firebaseUser && (
+                <Card className="p-6">
+                  <div
+                    className="flex items-center justify-between cursor-pointer"
+                    onClick={() => setShowSavedAddresses(!showSavedAddresses)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      <h2 className="text-xl font-serif font-bold text-foreground">
+                        Saved Addresses
+                      </h2>
+                      {savedAddresses.length > 0 && (
+                        <span className="text-sm text-muted-foreground">
+                          ({savedAddresses.length})
+                        </span>
+                      )}
+                    </div>
+                    {showSavedAddresses ? (
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </div>
+
+                  {showSavedAddresses && (
+                    <div className="mt-4">
+                      {isLoadingAddresses ? (
+                        <div className="flex items-center justify-center py-8">
+                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        </div>
+                      ) : savedAddresses.length === 0 ? (
+                        <p className="text-sm text-muted-foreground py-4">
+                          No saved addresses. Fill in the form below and check "Save this address" to save for future orders.
+                        </p>
+                      ) : (
+                        <div className="grid md:grid-cols-2 gap-3">
+                          {savedAddresses.map((address) => (
+                            <div
+                              key={address.id}
+                              onClick={() => selectAddress(address)}
+                              className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedAddressId === address.id
+                                ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                                : "border-border hover:border-primary/50"
+                                }`}
+                            >
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="font-semibold text-sm">{address.label}</span>
+                                {address.isDefault && (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-medium bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+                                    <Star className="h-2.5 w-2.5" />
+                                    Default
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm font-medium">
+                                {address.firstName} {address.lastName}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {address.address}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {address.city}, {address.state} - {address.zipCode}
+                              </p>
+                            </div>
+                          ))}
+
+                          {/* Enter New Address Card */}
+                          <div
+                            onClick={enterNewAddress}
+                            className={`border-2 border-dashed rounded-lg p-4 cursor-pointer transition-all flex flex-col items-center justify-center min-h-[120px] ${selectedAddressId === null && formData.address === ""
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50"
+                              }`}
+                          >
+                            <MapPin className="h-6 w-6 text-muted-foreground mb-2" />
+                            <span className="text-sm font-medium text-muted-foreground">
+                              Enter New Address
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Card>
+              )}
+
               {/* Shipping Address */}
               <Card className="p-6">
                 <h2 className="text-xl font-serif font-bold text-foreground mb-4">
@@ -250,35 +484,79 @@ export default function Checkout() {
 
                   <div className="grid md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="city">City *</Label>
-                      <Input
-                        id="city"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
                       <Label htmlFor="state">State *</Label>
-                      <Input
-                        id="state"
-                        name="state"
-                        value={formData.state}
-                        onChange={handleChange}
-                        required
-                        placeholder="NY"
-                      />
+                      {selectedAddressId ? (
+                        <Input
+                          id="state"
+                          name="state"
+                          value={formData.state}
+                          onChange={handleChange}
+                          required
+                          placeholder="State"
+                          className="bg-muted/50"
+                        />
+                      ) : (
+                        <Select
+                          value={formData.state}
+                          onValueChange={handleStateChange}
+                          required
+                        >
+                          <SelectTrigger id="state">
+                            <SelectValue placeholder="Select State" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {indianStates.map((state) => (
+                              <SelectItem key={state.code} value={state.name}>
+                                {state.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="zipCode">ZIP Code *</Label>
+                      <Label htmlFor="city">City *</Label>
+                      {selectedAddressId ? (
+                        <Input
+                          id="city"
+                          name="city"
+                          value={formData.city}
+                          onChange={handleChange}
+                          required
+                          placeholder="City"
+                          className="bg-muted/50"
+                        />
+                      ) : (
+                        <Select
+                          value={formData.city}
+                          onValueChange={handleCityChange}
+                          disabled={!formData.state}
+                          required
+                        >
+                          <SelectTrigger id="city">
+                            <SelectValue placeholder={formData.state ? "Select City" : "Select State first"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableCities.map((city) => (
+                              <SelectItem key={city.name} value={city.name}>
+                                {city.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="zipCode">PIN Code *</Label>
                       <Input
                         id="zipCode"
                         name="zipCode"
                         value={formData.zipCode}
                         onChange={handleChange}
                         required
-                        placeholder="10001"
+                        placeholder={selectedAddressId ? "PIN Code" : "Select city to auto-fill"}
+                        readOnly={!selectedAddressId}
+                        className={selectedAddressId ? "bg-muted/50" : ""}
                       />
                     </div>
                   </div>
@@ -295,6 +573,41 @@ export default function Checkout() {
                       placeholder="(555) 123-4567"
                     />
                   </div>
+
+                  {/* Save Address Option */}
+                  {firebaseUser && !selectedAddressId && (
+                    <div className="pt-2 space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="saveAddress"
+                          checked={saveNewAddress}
+                          onCheckedChange={(checked) => setSaveNewAddress(checked as boolean)}
+                        />
+                        <Label htmlFor="saveAddress" className="text-sm font-normal cursor-pointer">
+                          Save this address for future orders
+                        </Label>
+                      </div>
+
+                      {saveNewAddress && (
+                        <div className="ml-6 space-y-2">
+                          <Label htmlFor="addressLabel" className="text-sm">Address Label</Label>
+                          <Select
+                            value={newAddressLabel}
+                            onValueChange={setNewAddressLabel}
+                          >
+                            <SelectTrigger id="addressLabel" className="w-40">
+                              <SelectValue placeholder="Select label" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Home">Home</SelectItem>
+                              <SelectItem value="Office">Office</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </Card>
             </div>

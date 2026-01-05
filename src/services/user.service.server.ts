@@ -1,4 +1,5 @@
-import { getFirebaseAdminDb } from "@/lib/firebase/server";
+import { getFirebaseAdminDb, getFirebaseAdminApp } from "@/lib/firebase/server";
+import { getAuth } from "firebase-admin/auth";
 import type { UserProfile } from "@/models/user.model";
 
 const USERS_COLLECTION = "users";
@@ -220,6 +221,7 @@ export const userServiceServer = {
 
     /**
      * Delete a customer permanently (hard delete)
+     * Deletes from both Firestore and Firebase Authentication
      */
     async deleteCustomer(uid: string): Promise<void> {
         try {
@@ -231,10 +233,25 @@ export const userServiceServer = {
                 throw new Error("Customer not found");
             }
 
+            // Delete from Firebase Authentication first
+            try {
+                const auth = getAuth(getFirebaseAdminApp());
+                await auth.deleteUser(uid);
+                console.log(`Customer ${uid} deleted from Firebase Auth`);
+            } catch (authError: any) {
+                // If user doesn't exist in Auth, continue with Firestore deletion
+                if (authError.code === 'auth/user-not-found') {
+                    console.log(`Customer ${uid} not found in Firebase Auth, continuing with Firestore deletion`);
+                } else {
+                    console.error("Error deleting from Firebase Auth:", authError);
+                    throw new Error(`Failed to delete from Authentication: ${authError.message}`);
+                }
+            }
+
             // Delete the customer document from Firestore
             await db.collection(USERS_COLLECTION).doc(uid).delete();
 
-            console.log(`Customer ${uid} deleted successfully`);
+            console.log(`Customer ${uid} deleted successfully from Firestore`);
         } catch (error) {
             console.error("Error deleting customer:", error);
             throw new Error(
