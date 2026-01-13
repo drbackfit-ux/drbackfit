@@ -161,12 +161,6 @@ const Footer = () => {
             >
               Terms of Service
             </Link>
-            <Link
-              href="/shipping"
-              className="text-footer hover:text-primary-button transition-colors"
-            >
-              Shipping & Returns
-            </Link>
           </div>
         </div>
       </div>
