@@ -32,7 +32,7 @@ export default function PrivacyPolicyPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="prose prose-lg dark:prose-invert max-w-none space-y-8">
-            
+
             {/* About Us */}
             <section className="bg-card rounded-xl p-8 shadow-sm border">
               <h2 className="text-2xl font-semibold mb-4 text-foreground">About Us</h2>
@@ -189,18 +189,18 @@ export default function PrivacyPolicyPage() {
                   <strong>Address:</strong> Industrial Area, Phase-2, Meerut, Uttar Pradesh – 250001, India
                 </p>
                 <p>
-                  <strong>Phone:</strong> +91 9XXXXXXXXX
+                  <strong>Phone:</strong> +91 8937905906
                 </p>
                 <p>
                   <strong>Email:</strong>{" "}
-                  <a href="mailto:support@drbackfit.com" className="text-primary hover:underline">
-                    support@drbackfit.com
+                  <a href="mailto:support@drbackfitmattress.com" className="text-primary hover:underline">
+                    support@drbackfitmattress.com
                   </a>
                 </p>
                 <p>
                   <strong>Website:</strong>{" "}
-                  <a href="https://www.drbackfit.com" className="text-primary hover:underline">
-                    www.drbackfit.com
+                  <a href="https://www.drbackfitmattress.com" className="text-primary hover:underline">
+                    www.drbackfitmattress.com
                   </a>
                 </p>
               </div>

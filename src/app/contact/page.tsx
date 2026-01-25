@@ -101,7 +101,7 @@ export default function Contact() {
                   <Label htmlFor="enquiryType">Enquiry Type *</Label>
                   <Select
                     value={formData.enquiryType}
-                    onValueChange={(value) => 
+                    onValueChange={(value) =>
                       setFormData(prev => ({ ...prev, enquiryType: value }))
                     }
                   >
@@ -160,8 +160,8 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Phone</h3>
                     <p className="text-muted-foreground">
-                      (555) 123-4567<br />
-                      Mon-Fri: 9am - 6pm EST
+                      +91 8937905906<br />
+                      Mon-Sat: 10am - 6pm IST
                     </p>
                   </div>
                 </Card>

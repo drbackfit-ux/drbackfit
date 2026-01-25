@@ -115,7 +115,7 @@ const faqData: FAQCategory[] = [
             },
             {
                 question: "How can I contact customer support?",
-                answer: "You can reach us via email at support@drbackfit.com or call us at +91 9XXXXXXXXX. Our customer support team is available Monday to Saturday, 10 AM to 6 PM."
+                answer: "You can reach us via email at support@drbackfitmattress.com or call us at +91 8937905906. Our customer support team is available Monday to Saturday, 10 AM to 6 PM."
             },
             {
                 question: "Do you have a showroom I can visit?",

@@ -170,18 +170,18 @@ export default function TermsConditionsPage() {
                                     <strong>Address:</strong> Industrial Area, Phase-2, Meerut, Uttar Pradesh – 250001, India
                                 </p>
                                 <p>
-                                    <strong>Phone:</strong> +91 9XXXXXXXXX
+                                    <strong>Phone:</strong> +91 8937905906
                                 </p>
                                 <p>
                                     <strong>Email:</strong>{" "}
-                                    <a href="mailto:care@drbackfit.com" className="text-primary hover:underline">
-                                        care@drbackfit.com
+                                    <a href="mailto:care@drbackfitmattress.com" className="text-primary hover:underline">
+                                        care@drbackfitmattress.com
                                     </a>
                                 </p>
                                 <p>
                                     <strong>Website:</strong>{" "}
-                                    <a href="https://www.drbackfit.com" className="text-primary hover:underline">
-                                        www.drbackfit.com
+                                    <a href="https://www.drbackfitmattress.com" className="text-primary hover:underline">
+                                        www.drbackfitmattress.com
                                     </a>
                                 </p>
                             </div>
