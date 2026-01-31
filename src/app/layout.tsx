@@ -10,8 +10,7 @@ import "./globals.css";
 export const metadata = {
   title: "DrBackfitmattresses| Orthopedic Mattresses & Custom Mattresses IndiaMeta",
   description:
-    "Buy premium orthopedic mattresses & handcrafted mattresses. Doctor-recommended back support, 20+ years craftsmanship. Free delivery. Shop now!
-",
+    "Buy premium orthopedic mattresses & handcrafted mattresses. Doctor-recommended back support, 20+ years craftsmanship. Free delivery. Shop now!",
 };
 
 export default function RootLayout({
