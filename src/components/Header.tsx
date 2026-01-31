@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Search, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MobileMenu from "@/components/MobileMenu";
@@ -20,10 +21,15 @@ const Header = () => {
       <div className="container mx-auto">
         <div className="flex h-20 items-center px-4 relative">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <h1 className="text-2xl md:text-3xl font-serif font-semibold text-primary">
-              Dr Backfit
-            </h1>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/favicon.png"
+              alt="Dr Backfit - Orthopedic Mattress Solutions"
+              width={180}
+              height={50}
+              className="h-12 md:h-14 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation - Centered */}
