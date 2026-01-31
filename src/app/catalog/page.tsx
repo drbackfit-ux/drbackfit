@@ -124,11 +124,11 @@ function CatalogContent() {
       <div className="bg-secondary/20 border-b border-border">
         <div className="container mx-auto px-4 py-12">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
-            Our Collection
+            Orthopedic Mattresses & Sleep Accessories
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
-            Discover handcrafted furniture designed to elevate your living
-            spaces.
+            Discover doctor-recommended orthopedic mattresses, memory foam pillows,
+            and premium sleep accessories designed for back pain relief and better sleep.
           </p>
         </div>
       </div>
@@ -167,9 +167,8 @@ function CatalogContent() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <aside
-            className={`lg:w-64 flex-shrink-0 space-y-6 ${
-              showFilters ? "block" : "hidden lg:block"
-            }`}
+            className={`lg:w-64 flex-shrink-0 space-y-6 ${showFilters ? "block" : "hidden lg:block"
+              }`}
           >
             {/* Category Filter */}
             <div className="space-y-4">
@@ -239,18 +238,18 @@ function CatalogContent() {
             {(selectedCategories.length > 0 ||
               selectedMaterials.length > 0 ||
               selectedPriceRange) && (
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setSelectedCategories([]);
-                  setSelectedMaterials([]);
-                  setSelectedPriceRange("");
-                }}
-                className="w-full"
-              >
-                Clear All Filters
-              </Button>
-            )}
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setSelectedCategories([]);
+                    setSelectedMaterials([]);
+                    setSelectedPriceRange("");
+                  }}
+                  className="w-full"
+                >
+                  Clear All Filters
+                </Button>
+              )}
           </aside>
 
           {/* Products Grid */}

@@ -24,7 +24,7 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("featured");
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Filter states
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
@@ -43,22 +43,22 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
   const filteredAndSortedProducts = initialProducts
     .filter(product => {
       const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       // Category filter
-      const matchesCategory = selectedCategories.length === 0 || 
+      const matchesCategory = selectedCategories.length === 0 ||
         selectedCategories.some(cat => product.title.toLowerCase().includes(cat.toLowerCase()));
-      
+
       // Material filter
       const matchesMaterial = selectedMaterials.length === 0 ||
-        selectedMaterials.some(material => 
+        selectedMaterials.some(material =>
           product.materials.some(m => m.toLowerCase().includes(material.toLowerCase()))
         );
-      
+
       // Price range filter
       const selectedRange = priceRanges.find(range => range.label === selectedPriceRange);
       const matchesPriceRange = !selectedRange ||
         (product.priceEstimateMin >= selectedRange.min && product.priceEstimateMax <= selectedRange.max);
-      
+
       return matchesSearch && matchesCategory && matchesMaterial && matchesPriceRange;
     })
     .sort((a, b) => {
@@ -78,9 +78,10 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-serif font-bold mb-4">Accessories</h1>
+        <h1 className="text-4xl font-serif font-bold mb-4">Orthopedic Pillows & Sleep Accessories</h1>
         <p className="text-muted-foreground">
-          Discover our collection of premium accessories, including pillows, covers, and more.
+          Shop orthopedic pillows - memory foam, cervical, latex, cooling gel.
+          Ergonomic designs for neck pain relief and better sleep. Plus mattress protectors and bedding accessories.
         </p>
       </div>
 
@@ -120,9 +121,8 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Sidebar */}
         <div
-          className={`${
-            showFilters ? "block" : "hidden"
-          } lg:block w-full lg:w-64 space-y-6`}
+          className={`${showFilters ? "block" : "hidden"
+            } lg:block w-full lg:w-64 space-y-6`}
         >
           {/* Category Filter */}
           <div>
@@ -220,8 +220,8 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
           ) : (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg">
-                {initialProducts.length === 0 
-                  ? "No accessories available yet. Check back soon!" 
+                {initialProducts.length === 0
+                  ? "No accessories available yet. Check back soon!"
                   : "No accessories found matching your criteria."}
               </p>
               {selectedCategories.length > 0 || selectedMaterials.length > 0 || selectedPriceRange || searchQuery ? (

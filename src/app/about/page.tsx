@@ -21,7 +21,7 @@ export default function About() {
             Our Story
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Crafting timeless furniture with passion and precision since 2003
+            Crafting orthopedic mattresses and sleep solutions with passion and precision since 2003
           </p>
         </div>
       </section>
@@ -32,16 +32,17 @@ export default function About() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-4xl font-serif font-bold text-foreground">
-                Made by Hand, Loved for Years
+                Doctor-Recommended Sleep Solutions
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Dr Backfit was founded with a simple belief: furniture should be more than just functional. 
-                It should tell a story, reflect craftsmanship, and stand the test of time.
+                Dr Backfit was founded with a simple belief: everyone deserves a good night's sleep
+                without back pain. Our orthopedic mattresses are designed in consultation with
+                spine specialists to provide optimal support and comfort.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                For over two decades, we've been creating pieces that blend traditional joinery techniques 
-                with contemporary design. Each item is handcrafted by skilled artisans who pour their expertise 
-                and passion into every detail.
+                For over two decades, we've been creating sleep solutions that combine medical-grade
+                orthopedic support with premium comfort. From mattresses to pillows and protectors,
+                every product is crafted for your health and well-being.
               </p>
             </div>
             <div className="relative h-[400px]">
@@ -71,16 +72,16 @@ export default function About() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                title: "Quality Craftsmanship",
-                description: "Every piece is meticulously handcrafted by skilled artisans using time-honored techniques."
+                title: "Orthopedic Excellence",
+                description: "Every mattress is designed with spine specialists for optimal back support and pain relief."
               },
               {
-                title: "Sustainable Materials",
-                description: "We source only sustainably harvested hardwoods and eco-friendly materials."
+                title: "Premium Materials",
+                description: "We use high-density orthopedic foam and hypoallergenic fabrics for lasting comfort."
               },
               {
-                title: "Timeless Design",
-                description: "Our designs transcend trends, ensuring your furniture remains beautiful for generations."
+                title: "Complete Sleep Solutions",
+                description: "From mattresses to pillows and protectors, we offer everything you need for better sleep."
               }
             ].map((value) => (
               <div key={value.title} className="card-premium p-8 text-center space-y-4">
@@ -101,10 +102,10 @@ export default function About() {
       <section className="section-padding">
         <div className="container mx-auto text-center space-y-6">
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-            Experience the Difference
+            Experience Better Sleep
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Visit our showroom or browse our collection to discover furniture that's built to last.
+            Visit our showroom to try our orthopedic mattresses or get a free consultation for your sleep needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button asChild size="lg" className="btn-premium">

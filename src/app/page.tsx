@@ -43,13 +43,14 @@ export default async function Home() {
         <div className="relative z-10 container mx-auto px-4">
           <div className="max-w-2xl space-y-6 animate-fade-in-up">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-foreground leading-tight">
-              Made by hand.
+              Premium Orthopedic Mattresses
               <br />
-              <span className="text-gradient-premium">Loved for years.</span>
+              <span className="text-gradient-premium">& Sleep Accessories</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl">
-              Premium furniture crafted by master artisans. Each piece tells a
-              story of dedication, quality materials, and timeless design.
+              Doctor-Recommended Back Support. Complete Sleep Solutions Since 2003.
+              Experience medical-grade orthopedic support with our premium mattresses,
+              ergonomic pillows, and sleep essentials.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button asChild size="lg" className="btn-premium text-base">
@@ -75,11 +76,11 @@ export default async function Home() {
         <div className="container mx-auto">
           <div className="text-center mb-8 space-y-3">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-              Bestsellers
+              Bestselling Mattresses & Accessories
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Our most loved pieces. Shop customer favorites and see why they
-              choose Dr Backfit.
+              Our most loved orthopedic mattresses and sleep accessories. Trusted by thousands
+              of families across India for back pain relief and better sleep.
             </p>
           </div>
 
@@ -107,8 +108,8 @@ export default async function Home() {
               Browse by Category
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              From statement beds to inviting sofas, discover furniture designed
-              for how you live.
+              From orthopedic mattresses to ergonomic pillows and mattress protectors,
+              discover complete sleep solutions for your home.
             </p>
           </div>
 
@@ -138,11 +139,11 @@ export default async function Home() {
         <div className="container mx-auto">
           <div className="text-center mb-8 space-y-3">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-              Featured Collection
+              Featured Orthopedic Products
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Handpicked pieces that exemplify our commitment to quality and
-              design.
+              Doctor-recommended mattresses and sleep accessories designed for
+              optimal back support and restful sleep.
             </p>
           </div>
 
@@ -168,20 +169,20 @@ export default async function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 animate-fade-in-up">
               <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-                Craftsmanship That Speaks
+                20+ Years of Sleep Expertise
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                For over two decades, Dr Backfit has been creating furniture
-                that transcends trends. Our workshop combines traditional
-                joinery techniques with modern design sensibilities, ensuring
-                each piece is both beautiful and built to last.
+                For over two decades, Dr Backfit has been creating orthopedic
+                mattresses and sleep accessories designed in consultation with
+                spine specialists. Our products provide the perfect balance of
+                firm support and pressure-relieving comfort.
               </p>
               <ul className="space-y-3">
                 {[
-                  "Sustainably sourced hardwoods",
-                  "Hand-selected premium fabrics",
-                  "Custom dimensions available",
-                  "Lifetime craftsmanship warranty",
+                  "Orthopedic designs for optimal spine alignment",
+                  "High-density foam for 10+ years durability",
+                  "Complete sleep solutions: mattresses, pillows, protectors",
+                  "Free delivery and installation across India",
                 ].map((feature) => (
                   <li key={feature} className="flex items-center space-x-3">
                     <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0" />
@@ -246,11 +247,11 @@ export default async function Home() {
       <section className="section-padding bg-secondary text-black-foreground">
         <div className="container mx-auto text-center space-y-6">
           <h2 className="text-4xl md:text-5xl font-serif font-bold">
-            Ready to Create Something Special?
+            Ready for Better Sleep?
           </h2>
           <p className="text-lg max-w-2xl mx-auto opacity-90">
-            Book a showroom visit or request a custom quote. Our team is ready
-            to bring your vision to life.
+            Visit our showroom to experience our orthopedic mattresses or get
+            a free consultation for your sleep needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button asChild size="lg" variant="secondary" className="text-base border">

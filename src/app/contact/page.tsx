@@ -46,7 +46,7 @@ export default function Contact() {
             Get in Touch
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
-            Have questions about our furniture or need assistance? We're here to help.
+            Have questions about our orthopedic mattresses or need sleep advice? We're here to help you find the perfect solution for better rest.
           </p>
         </div>
       </div>

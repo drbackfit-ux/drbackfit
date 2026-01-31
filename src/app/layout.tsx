@@ -8,9 +8,9 @@ import { LayoutContent } from "./layout-content";
 import "./globals.css";
 
 export const metadata = {
-  title: "DrBackfitmattresses| Orthopedic Mattresses & Custom Mattresses IndiaMeta",
+  title: "Dr Backfit | Orthopedic Mattresses and Sleep Accessories India",
   description:
-    "Buy premium orthopedic mattresses & handcrafted mattresses. Doctor-recommended back support, 20+ years craftsmanship. Free delivery. Shop now!",
+    "Buy premium orthopedic mattresses, pillows, mattress protectors, and sleep accessories. Doctor-recommended back support, 20+ years expertise. Free delivery!",
 };
 
 export default function RootLayout({
