@@ -72,7 +72,7 @@ export default function Cart() {
                           </h3>
                         </Link>
                         <p className="text-lg font-semibold text-primary mt-2">
-                          ${item.price.toLocaleString()}
+                          ₹{item.price.toLocaleString()}
                         </p>
                       </div>
                       <Button
@@ -125,7 +125,7 @@ export default function Cart() {
               <div className="space-y-3 border-t border-border pt-4">
                 <div className="flex justify-between text-muted-foreground">
                   <span>Subtotal</span>
-                  <span>${getTotal().toLocaleString()}</span>
+                  <span>₹{getTotal().toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Shipping</span>
@@ -141,7 +141,7 @@ export default function Cart() {
                 <div className="flex justify-between text-xl font-bold">
                   <span>Total</span>
                   <span className="text-primary">
-                    ${getTotal().toLocaleString()}
+                    ₹{getTotal().toLocaleString()}
                   </span>
                 </div>
               </div>

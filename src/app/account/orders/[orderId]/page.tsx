@@ -180,12 +180,12 @@ export default function OrderDetailsPage({
                                                     Quantity: {item.quantity}
                                                 </p>
                                                 <p className="text-sm font-medium mt-1">
-                                                    ${item.price.toLocaleString()} each
+                                                    ₹{item.price.toLocaleString()} each
                                                 </p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="font-bold">
-                                                    ${item.subtotal.toLocaleString()}
+                                                    ₹{item.subtotal.toLocaleString()}
                                                 </p>
                                             </div>
                                         </div>
@@ -217,23 +217,23 @@ export default function OrderDetailsPage({
                             <div className="space-y-2 text-sm">
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Subtotal</span>
-                                    <span>${order.subtotal.toLocaleString()}</span>
+                                    <span>₹{order.subtotal.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Shipping</span>
                                     <span>
-                                        {order.shipping === 0 ? "Free" : `$${order.shipping}`}
+                                        {order.shipping === 0 ? "Free" : `₹${order.shipping}`}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Tax</span>
-                                    <span>${order.tax.toFixed(2)}</span>
+                                    <span>₹{order.tax.toFixed(2)}</span>
                                 </div>
                                 <Separator className="my-2" />
                                 <div className="flex justify-between text-lg font-bold">
                                     <span>Total</span>
                                     <span className="text-primary">
-                                        ${order.total.toFixed(2)}
+                                        ₹{order.total.toFixed(2)}
                                     </span>
                                 </div>
                             </div>

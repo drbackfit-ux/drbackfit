@@ -177,9 +177,9 @@ export default function Showroom() {
                   <div>
                     <h4 className="font-semibold text-foreground mb-1">Location</h4>
                     <p className="text-muted-foreground">
-                      123 Furniture Lane<br />
-                      Design District<br />
-                      New York, NY 10001
+                      Industrial Area, Phase-2<br />
+                      Meerut, Uttar Pradesh<br />
+                      250001, India
                     </p>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function Showroom() {
                   <div>
                     <h4 className="font-semibold text-foreground mb-1">Phone</h4>
                     <p className="text-muted-foreground">
-                      (555) 123-4567
+                      +91 8937905906
                     </p>
                   </div>
                 </div>
@@ -211,7 +211,7 @@ export default function Showroom() {
                   <div>
                     <h4 className="font-semibold text-foreground mb-1">Email</h4>
                     <p className="text-muted-foreground">
-                      showroom@beigeandoak.com
+                      support@drbackfitmattress.com
                     </p>
                   </div>
                 </div>
@@ -251,7 +251,7 @@ export default function Showroom() {
                 Parking & Accessibility
               </h3>
               <p className="text-muted-foreground mb-3">
-                Free parking available in our dedicated lot. The showroom is fully wheelchair accessible 
+                Free parking available in our dedicated lot. The showroom is fully wheelchair accessible
                 with ground-level entry.
               </p>
               <p className="text-sm text-muted-foreground">

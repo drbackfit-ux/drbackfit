@@ -148,9 +148,9 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Address</h3>
                     <p className="text-muted-foreground">
-                      123 Furniture Lane<br />
-                      Design District<br />
-                      New York, NY 10001
+                      Industrial Area, Phase-2<br />
+                      Meerut, Uttar Pradesh<br />
+                      250001, India
                     </p>
                   </div>
                 </Card>
@@ -171,8 +171,7 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
                     <p className="text-muted-foreground">
-                      info@beigeandoak.com<br />
-                      sales@beigeandoak.com
+                      support@drbackfitmattress.com
                     </p>
                   </div>
                 </Card>

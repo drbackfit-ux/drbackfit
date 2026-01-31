@@ -819,7 +819,7 @@ export default function Account() {
                         <div className="text-right">
                           <p className="text-sm text-muted-foreground">Total</p>
                           <p className="text-xl font-bold text-primary">
-                            ${order.total.toLocaleString()}
+                            ₹{order.total.toLocaleString()}
                           </p>
                         </div>
                         <div className="flex gap-2">

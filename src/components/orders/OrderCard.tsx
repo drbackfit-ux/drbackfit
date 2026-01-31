@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
-import { Package, Calendar, DollarSign, ArrowRight } from "lucide-react";
+import { Package, Calendar, IndianRupee, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Timestamp } from "firebase/firestore";
@@ -67,7 +67,7 @@ export function OrderCard({ order }: OrderCardProps) {
                         <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm truncate">{item.title}</p>
                             <p className="text-xs text-muted-foreground">
-                                Qty: {item.quantity} × ${item.price.toLocaleString()}
+                                Qty: {item.quantity} × ₹{item.price.toLocaleString()}
                             </p>
                         </div>
                     </div>
@@ -85,8 +85,8 @@ export function OrderCard({ order }: OrderCardProps) {
             {/* Footer */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-lg font-bold">${order.total.toFixed(2)}</span>
+                    <IndianRupee className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-lg font-bold">₹{order.total.toFixed(2)}</span>
                     <span className="text-sm text-muted-foreground">
                         ({order.items.reduce((sum, item) => sum + item.quantity, 0)} items)
                     </span>
