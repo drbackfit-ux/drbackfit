@@ -8,9 +8,10 @@ import { LayoutContent } from "./layout-content";
 import "./globals.css";
 
 export const metadata = {
-  title: "Dr Backfit Atelier - Premium Handcrafted Furniture",
+  title: "DrBackfitmattresses| Orthopedic Mattresses & Custom Mattresses IndiaMeta",
   description:
-    "Premium furniture crafted by master artisans. Each piece tells a story of dedication, quality materials, and timeless design.",
+    "Buy premium orthopedic mattresses & handcrafted mattresses. Doctor-recommended back support, 20+ years craftsmanship. Free delivery. Shop now!
+",
 };
 
 export default function RootLayout({
