@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Instagram, Linkedin } from "lucide-react";
+import { Facebook, Instagram, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -19,34 +19,33 @@ const Footer = () => {
               Made by hand. Loved for years.
             </p>
             <div className="flex space-x-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white hover:scale-110 hover:shadow-lg transition-all duration-300"
-              >
-                <Instagram className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 bg-blue-600 text-white hover:bg-blue-700 hover:scale-110 hover:shadow-lg transition-all duration-300"
-              >
-                <Facebook className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 bg-black text-white hover:bg-gray-800 hover:scale-110 hover:shadow-lg transition-all duration-300"
-              >
-                <span className="text-lg font-bold">𝕏</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 bg-blue-700 text-white hover:bg-blue-800 hover:scale-110 hover:shadow-lg transition-all duration-300"
-              >
-                <Linkedin className="h-4 w-4" />
-              </Button>
+              <Link href="https://www.instagram.com/dr.backfitmattress" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white hover:scale-110 hover:shadow-lg transition-all duration-300"
+                >
+                  <Instagram className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="https://www.facebook.com/dr.backfitmattress" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 bg-blue-600 text-white hover:bg-blue-700 hover:scale-110 hover:shadow-lg transition-all duration-300"
+                >
+                  <Facebook className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="https://www.youtube.com/@drbackfitmattress7454" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 bg-red-600 text-white hover:bg-red-700 hover:scale-110 hover:shadow-lg transition-all duration-300"
+                >
+                  <Youtube className="h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
 
