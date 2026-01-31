@@ -208,7 +208,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* TEMPORARILY COMMENTED - Client Stories Section
       <section className="section-padding">
         <div className="container mx-auto">
           <div className="text-center mb-8">
@@ -241,6 +241,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      END TEMPORARILY COMMENTED */}
 
       {/* CTA Section */}
       <section className="section-padding bg-secondary text-black-foreground">

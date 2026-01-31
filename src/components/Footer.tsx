@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Facebook, Instagram, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,9 +13,15 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Column */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-serif font-semibold text-footer">
-              Dr Backfit
-            </h3>
+            <Link href="/">
+              <Image
+                src="/logo.png"
+                alt="Dr Backfit"
+                width={180}
+                height={50}
+                className="h-12 w-auto object-contain"
+              />
+            </Link>
             <p className="text-sm text-footer italic">
               Made by hand. Loved for years.
             </p>
@@ -147,12 +154,24 @@ const Footer = () => {
           <p className="text-sm text-footer" suppressHydrationWarning>
             © {currentYear} Dr Backfit. All rights reserved.
           </p>
-          <div className="flex space-x-6 text-sm">
+          <div className="flex flex-wrap justify-center gap-4 text-sm">
             <Link
               href="/privacy"
               className="text-footer hover:text-primary-button transition-colors"
             >
               Privacy Policy
+            </Link>
+            <Link
+              href="/terms"
+              className="text-footer hover:text-primary-button transition-colors"
+            >
+              Terms & Conditions
+            </Link>
+            <Link
+              href="/shipping-policy"
+              className="text-footer hover:text-primary-button transition-colors"
+            >
+              Shipping Policy
             </Link>
             <Link
               href="/refund-policy"
