@@ -190,6 +190,35 @@ export function ProductDetailClient({
     [product.pricing.currency]
   );
 
+  // Compute active pricing based on selected size (with fallback to product pricing)
+  const activePricing = useMemo(() => {
+    // Find the selected size option
+    const selectedSizeOption = product.sizeOptions?.find(
+      (size) => size.value === selectedSize
+    );
+
+    // If size has its own pricing with required fields, use it
+    if (selectedSizeOption?.pricing?.mrp && selectedSizeOption?.pricing?.salePrice) {
+      const sizePricing = selectedSizeOption.pricing;
+      return {
+        mrp: sizePricing.mrp,
+        salePrice: sizePricing.salePrice,
+        discountPercent: sizePricing.discountPercent ??
+          Math.round(((sizePricing.mrp - sizePricing.salePrice) / sizePricing.mrp) * 100),
+        savingsAmount: sizePricing.savingsAmount ?? (sizePricing.mrp - sizePricing.salePrice),
+        couponCode: sizePricing.couponCode ?? product.pricing.couponCode,
+        couponPrice: sizePricing.couponPrice ?? product.pricing.couponPrice,
+        emiText: sizePricing.emiText ?? product.pricing.emiText,
+        currency: product.pricing.currency,
+        couponDescription: product.pricing.couponDescription,
+        taxInclusiveLabel: product.pricing.taxInclusiveLabel,
+      };
+    }
+
+    // Fallback to product-level pricing
+    return product.pricing;
+  }, [selectedSize, product.sizeOptions, product.pricing]);
+
   useEffect(() => {
     setSelectedSize(
       product.sizeOptions?.find((size) => size.isDefault)?.value ??
@@ -503,17 +532,17 @@ export function ProductDetailClient({
             <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                 <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words">
-                  {currencyFormatter.format(product.pricing.salePrice)}
+                  {currencyFormatter.format(activePricing.salePrice)}
                 </span>
                 <span className="text-base sm:text-lg lg:text-xl text-gray-500 line-through break-words">
-                  {currencyFormatter.format(product.pricing.mrp)}
+                  {currencyFormatter.format(activePricing.mrp)}
                 </span>
                 <span className="text-xs sm:text-sm text-green-600 font-medium bg-green-50 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded whitespace-nowrap">
-                  {product.pricing.discountPercent}% off
+                  {activePricing.discountPercent}% off
                 </span>
               </div>
               <p className="text-sm text-green-600">
-                (Save ₹{formatNumber(product.pricing.savingsAmount)})
+                (Save ₹{formatNumber(activePricing.savingsAmount)})
               </p>
             </div>
 
@@ -524,22 +553,22 @@ export function ProductDetailClient({
               </h3>
               <div className="space-y-2">
                 {/* Coupon Code and Coupon Price */}
-                {(product.pricing.couponCode || product.pricing.couponPrice) && (
+                {(activePricing.couponCode || activePricing.couponPrice) && (
                   <div className="bg-blue-50 border border-dashed border-blue-300 rounded-lg p-2">
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                      {product.pricing.couponCode && (
+                      {activePricing.couponCode && (
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-medium text-gray-700">Coupon Code:</span>
                           <Badge variant="secondary" className="bg-blue-600 text-white font-mono text-xs px-2 py-0.5">
-                            {product.pricing.couponCode}
+                            {activePricing.couponCode}
                           </Badge>
                         </div>
                       )}
-                      {product.pricing.couponPrice && (
+                      {activePricing.couponPrice && (
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-medium text-gray-700">Coupon Price:</span>
                           <span className="text-sm sm:text-base font-bold text-blue-700">
-                            {currencyFormatter.format(product.pricing.couponPrice)}
+                            {currencyFormatter.format(activePricing.couponPrice)}
                           </span>
                         </div>
                       )}
@@ -548,11 +577,11 @@ export function ProductDetailClient({
                 )}
 
                 {/* EMI Text */}
-                {product.pricing.emiText && (
+                {activePricing.emiText && (
                   <div className="flex items-start gap-1.5 p-2 bg-purple-50 rounded-lg border border-dashed border-purple-300">
                     <span className="text-purple-600 mt-0.5 text-sm">ℹ️</span>
                     <p className="text-xs text-purple-900 break-words leading-relaxed">
-                      {product.pricing.emiText}
+                      {activePricing.emiText}
                     </p>
                   </div>
                 )}

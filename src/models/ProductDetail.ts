@@ -19,11 +19,23 @@ export const ProductPricingSchema = z.object({
   taxInclusiveLabel: z.string().optional(),
 });
 
+// Size-specific pricing schema (optional per size)
+export const ProductSizePricingSchema = z.object({
+  mrp: z.number().positive(),
+  salePrice: z.number().positive(),
+  discountPercent: z.number().min(0).optional(),
+  savingsAmount: z.number().min(0).optional(),
+  couponCode: z.string().optional(),
+  couponPrice: z.number().positive().optional(),
+  emiText: z.string().optional(),
+});
+
 export const ProductSizeOptionSchema = z.object({
   label: z.string().min(1),
   value: z.string().min(1),
   inStock: z.boolean(),
   isDefault: z.boolean().optional(),
+  pricing: ProductSizePricingSchema.optional(), // Optional size-specific pricing
 });
 
 export const ProductOfferSchema = z.object({
@@ -118,6 +130,7 @@ export type ProductDetail = z.infer<typeof ProductDetailSchema>;
 export type ProductRating = z.infer<typeof ProductRatingSchema>;
 export type ProductPricing = z.infer<typeof ProductPricingSchema>;
 export type ProductSizeOption = z.infer<typeof ProductSizeOptionSchema>;
+export type ProductSizePricing = z.infer<typeof ProductSizePricingSchema>;
 export type ProductOffer = z.infer<typeof ProductOfferSchema>;
 export type ProductDelivery = z.infer<typeof ProductDeliverySchema>;
 export type ProductServiceHighlight = z.infer<

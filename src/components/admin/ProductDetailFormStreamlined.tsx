@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
+import { Plus, X, Upload, Loader2, Image as ImageIcon, ChevronDown, ChevronUp, DollarSign } from "lucide-react";
 import type { ProductDetail } from "@/models/ProductDetail";
 import {
   Select,
@@ -32,6 +32,7 @@ export function ProductDetailFormStreamlined({
   onCancel,
 }: ProductDetailFormStreamlinedProps) {
   const { uploadImages, isUploading, uploadProgress, error: uploadError } = useImageUpload();
+  const [expandedSizePricing, setExpandedSizePricing] = useState<Set<number>>(new Set());
 
   const [formData, setFormData] = useState({
     // Basic Info - VISIBLE ON PAGE
@@ -202,7 +203,13 @@ export function ProductDetailFormStreamlined({
       ...formData,
       sizeOptions: [
         ...formData.sizeOptions,
-        { label: "", value: "", inStock: true, isDefault: false },
+        {
+          label: "",
+          value: "",
+          inStock: true,
+          isDefault: false,
+          pricing: undefined, // Optional size-specific pricing
+        },
       ],
     });
   };
@@ -218,6 +225,50 @@ export function ProductDetailFormStreamlined({
       ...formData,
       sizeOptions: formData.sizeOptions.filter((_, i) => i !== index),
     });
+    // Also remove from expanded set
+    const newExpanded = new Set(expandedSizePricing);
+    newExpanded.delete(index);
+    setExpandedSizePricing(newExpanded);
+  };
+
+  const toggleSizePricingExpanded = (index: number) => {
+    const newExpanded = new Set(expandedSizePricing);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
+    }
+    setExpandedSizePricing(newExpanded);
+  };
+
+  const updateSizePricing = (index: number, field: string, value: any) => {
+    const newOptions = [...formData.sizeOptions];
+    const currentPricing = newOptions[index].pricing || {
+      mrp: 0,
+      salePrice: 0,
+    };
+
+    // Update the field
+    const updatedPricing = { ...currentPricing, [field]: value };
+
+    // Auto-calculate discount if MRP and salePrice are present
+    if (field === 'mrp' || field === 'salePrice') {
+      const mrp = field === 'mrp' ? value : updatedPricing.mrp;
+      const salePrice = field === 'salePrice' ? value : updatedPricing.salePrice;
+      if (mrp > 0 && salePrice > 0) {
+        updatedPricing.discountPercent = Math.round(((mrp - salePrice) / mrp) * 100);
+        updatedPricing.savingsAmount = mrp - salePrice;
+      }
+    }
+
+    newOptions[index] = { ...newOptions[index], pricing: updatedPricing };
+    setFormData({ ...formData, sizeOptions: newOptions });
+  };
+
+  const clearSizePricing = (index: number) => {
+    const newOptions = [...formData.sizeOptions];
+    newOptions[index] = { ...newOptions[index], pricing: undefined };
+    setFormData({ ...formData, sizeOptions: newOptions });
   };
 
   // Offers Management
@@ -809,50 +860,175 @@ export function ProductDetailFormStreamlined({
               Add Size
             </Button>
           </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Each size can have its own pricing. If no pricing is set, the product&apos;s default pricing will be used.
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           {formData.sizeOptions.map((option, index) => (
-            <div key={index} className="flex gap-2 items-start p-4 border rounded">
-              <div className="flex-1 grid grid-cols-2 gap-2">
-                <Input
-                  value={option.label}
-                  onChange={(e) => updateSizeOption(index, 'label', e.target.value)}
-                  placeholder="Label (e.g., King Size)"
-                />
-                <Input
-                  value={option.value}
-                  onChange={(e) => updateSizeOption(index, 'value', e.target.value)}
-                  placeholder="Value (e.g., 72x84)"
-                />
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    checked={option.inStock}
-                    onCheckedChange={(checked: boolean) =>
-                      updateSizeOption(index, 'inStock', checked)
-                    }
-                  />
-                  <Label>In Stock</Label>
+            <div key={index} className="p-4 border rounded-lg space-y-3">
+              {/* Size Name and Basic Info */}
+              <div className="flex gap-2 items-start">
+                <div className="flex-1 space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Size Name</Label>
+                      <Input
+                        value={option.label}
+                        onChange={(e) => updateSizeOption(index, 'label', e.target.value)}
+                        placeholder="e.g., King Size | 180 X 200"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Size Value (ID)</Label>
+                      <Input
+                        value={option.value}
+                        onChange={(e) => updateSizeOption(index, 'value', e.target.value)}
+                        placeholder="e.g., king-6"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={option.inStock}
+                        onCheckedChange={(checked: boolean) =>
+                          updateSizeOption(index, 'inStock', checked)
+                        }
+                      />
+                      <Label className="text-sm">In Stock</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={option.isDefault || false}
+                        onCheckedChange={(checked: boolean) =>
+                          updateSizeOption(index, 'isDefault', checked)
+                        }
+                      />
+                      <Label className="text-sm">Default</Label>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    checked={option.isDefault || false}
-                    onCheckedChange={(checked: boolean) =>
-                      updateSizeOption(index, 'isDefault', checked)
-                    }
-                  />
-                  <Label>Default</Label>
-                </div>
+                <Button
+                  type="button"
+                  onClick={() => removeSizeOption(index)}
+                  size="sm"
+                  variant="ghost"
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-              <Button
-                type="button"
-                onClick={() => removeSizeOption(index)}
-                size="sm"
-                variant="ghost"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+
+              {/* Collapsible Pricing Section */}
+              <div className="border-t pt-3">
+                <button
+                  type="button"
+                  onClick={() => toggleSizePricingExpanded(index)}
+                  className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  <DollarSign className="h-4 w-4" />
+                  Size Pricing
+                  {option.pricing?.mrp ? (
+                    <span className="text-green-600 font-normal">
+                      (₹{option.pricing.salePrice?.toLocaleString()} / MRP ₹{option.pricing.mrp?.toLocaleString()})
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 font-normal">(Using default pricing)</span>
+                  )}
+                  {expandedSizePricing.has(index) ? (
+                    <ChevronUp className="h-4 w-4 ml-auto" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 ml-auto" />
+                  )}
+                </button>
+
+                {expandedSizePricing.has(index) && (
+                  <div className="mt-3 p-3 bg-gray-50 rounded-lg space-y-3">
+                    {/* MRP, Sale Price, Discount */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <Label className="text-xs">MRP (₹) *</Label>
+                        <Input
+                          type="number"
+                          value={option.pricing?.mrp || ""}
+                          onChange={(e) => updateSizePricing(index, 'mrp', Number(e.target.value))}
+                          placeholder="25000"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Sale Price (₹) *</Label>
+                        <Input
+                          type="number"
+                          value={option.pricing?.salePrice || ""}
+                          onChange={(e) => updateSizePricing(index, 'salePrice', Number(e.target.value))}
+                          placeholder="20000"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Discount % (Auto)</Label>
+                        <Input
+                          type="number"
+                          value={option.pricing?.discountPercent || ""}
+                          readOnly
+                          className="bg-gray-100"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Coupon Code, Coupon Price, EMI */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <Label className="text-xs">Coupon Code (Optional)</Label>
+                        <Input
+                          value={option.pricing?.couponCode || ""}
+                          onChange={(e) => updateSizePricing(index, 'couponCode', e.target.value)}
+                          placeholder="SAVE500"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Coupon Price (₹)</Label>
+                        <Input
+                          type="number"
+                          value={option.pricing?.couponPrice || ""}
+                          onChange={(e) => updateSizePricing(index, 'couponPrice', e.target.value ? Number(e.target.value) : undefined)}
+                          placeholder="19500"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">EMI Text (Optional)</Label>
+                        <Input
+                          value={option.pricing?.emiText || ""}
+                          onChange={(e) => updateSizePricing(index, 'emiText', e.target.value)}
+                          placeholder="₹2,000/month"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Clear Pricing Button */}
+                    {option.pricing?.mrp && (
+                      <div className="flex justify-end">
+                        <Button
+                          type="button"
+                          onClick={() => clearSizePricing(index)}
+                          size="sm"
+                          variant="outline"
+                          className="text-red-500 hover:text-red-700 text-xs"
+                        >
+                          Clear Size Pricing
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
+          {formData.sizeOptions.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No size options added. Click &quot;Add Size&quot; to add a size option with optional pricing.
+            </p>
+          )}
         </CardContent>
       </Card>
 

@@ -28,12 +28,12 @@ const parseProduct = (doc: QueryDocumentSnapshot<DocumentData>) => {
 const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
   const normalized = normalizeProductDocument(doc);
   const data = doc.data();
-  
+
   console.log(`🔧 Parsing product detail for: ${data.title}`);
   console.log(`📋 Raw data keys:`, Object.keys(data));
   console.log(`🖼️ Images:`, data.images);
   console.log(`📦 Video shopping data:`, data.videoShopping);
-  
+
   // Add default values for required ProductDetail fields
   const withDefaults = {
     ...normalized,
@@ -47,7 +47,7 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
     },
     priceEstimateMin: normalized.priceEstimateMin || data.pricing?.salePrice || 1,
     priceEstimateMax: normalized.priceEstimateMax || data.pricing?.mrp || data.pricing?.salePrice || 1,
-    
+
     // ProductDetail specific fields
     subtitle: (data.subtitle && data.subtitle.trim()) || data.shortDescription || "Handcrafted Furniture",
     rating: data.rating || {
@@ -71,23 +71,44 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
       subLabel: (data.stockStatus?.subLabel && data.stockStatus.subLabel.trim()) || "Ready to ship",
       inStock: data.stockStatus?.inStock !== undefined ? data.stockStatus.inStock : true,
     },
-    sizeOptions: data.sizeOptions 
-      ? data.sizeOptions.filter((opt: any) => 
-          opt && 
-          opt.label && 
-          opt.label.trim() && 
-          opt.value && 
-          opt.value.trim()
-        )
+    sizeOptions: data.sizeOptions
+      ? data.sizeOptions.filter((opt: any) =>
+        opt &&
+        opt.label &&
+        opt.label.trim() &&
+        opt.value &&
+        opt.value.trim()
+      ).map((opt: any) => {
+        // Process pricing if present
+        if (opt.pricing && opt.pricing.mrp && opt.pricing.salePrice) {
+          const mrp = Number(opt.pricing.mrp);
+          const salePrice = Number(opt.pricing.salePrice);
+          return {
+            ...opt,
+            pricing: {
+              mrp,
+              salePrice,
+              discountPercent: opt.pricing.discountPercent ?? Math.round(((mrp - salePrice) / mrp) * 100),
+              savingsAmount: opt.pricing.savingsAmount ?? (mrp - salePrice),
+              couponCode: opt.pricing.couponCode || undefined,
+              couponPrice: opt.pricing.couponPrice ? Number(opt.pricing.couponPrice) : undefined,
+              emiText: opt.pricing.emiText || undefined,
+            },
+          };
+        }
+        // Remove pricing if incomplete
+        const { pricing, ...rest } = opt;
+        return rest;
+      })
       : [],
-    offers: data.offers 
-      ? data.offers.filter((offer: any) => 
-          offer && 
-          offer.title && 
-          offer.title.trim() && 
-          offer.description && 
-          offer.description.trim()
-        )
+    offers: data.offers
+      ? data.offers.filter((offer: any) =>
+        offer &&
+        offer.title &&
+        offer.title.trim() &&
+        offer.description &&
+        offer.description.trim()
+      )
       : [],
     delivery: {
       placeholder: (data.delivery?.placeholder && data.delivery.placeholder.trim()) || "Enter pincode",
@@ -99,22 +120,22 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
       description: (data.videoShopping?.description && data.videoShopping.description.trim()) || "Schedule a video call with our experts",
       ctaLabel: (data.videoShopping?.ctaLabel && data.videoShopping.ctaLabel.trim()) || "Book Appointment",
       ctaHref: (data.videoShopping?.ctaHref && data.videoShopping.ctaHref.trim()) || "/contact",
-      imageUrl: (data.videoShopping?.imageUrl && data.videoShopping.imageUrl.trim() && data.videoShopping.imageUrl.startsWith('http')) 
+      imageUrl: (data.videoShopping?.imageUrl && data.videoShopping.imageUrl.trim() && data.videoShopping.imageUrl.startsWith('http'))
         ? data.videoShopping.imageUrl.trim()
-        : (data.images && Array.isArray(data.images) && data.images.length > 0 && data.images[0] && data.images[0].trim()) 
+        : (data.images && Array.isArray(data.images) && data.images.length > 0 && data.images[0] && data.images[0].trim())
           ? data.images[0].trim()
           : "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop",
     },
-    serviceHighlights: data.serviceHighlights 
-      ? data.serviceHighlights.filter((sh: any) => 
-          sh && 
-          sh.title && 
-          sh.title.trim() && 
-          sh.description && 
-          sh.description.trim() &&
-          sh.icon &&
-          sh.icon.trim()
-        )
+    serviceHighlights: data.serviceHighlights
+      ? data.serviceHighlights.filter((sh: any) =>
+        sh &&
+        sh.title &&
+        sh.title.trim() &&
+        sh.description &&
+        sh.description.trim() &&
+        sh.icon &&
+        sh.icon.trim()
+      )
       : [
         {
           title: "Free Delivery",
@@ -127,20 +148,20 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
           icon: "🛡️",
         },
       ],
-    detailSections: data.detailSections 
-      ? data.detailSections.filter((ds: any) => 
-          ds && 
-          ds.id && 
-          ds.id.trim() && 
-          ds.title && 
-          ds.title.trim() &&
-          ds.content &&
-          Array.isArray(ds.content) &&
-          ds.content.length > 0
-        ).map((ds: any) => ({
-          ...ds,
-          content: ds.content.filter((c: string) => c && c.trim())
-        }))
+    detailSections: data.detailSections
+      ? data.detailSections.filter((ds: any) =>
+        ds &&
+        ds.id &&
+        ds.id.trim() &&
+        ds.title &&
+        ds.title.trim() &&
+        ds.content &&
+        Array.isArray(ds.content) &&
+        ds.content.length > 0
+      ).map((ds: any) => ({
+        ...ds,
+        content: ds.content.filter((c: string) => c && c.trim())
+      }))
       : [
         {
           id: "description",
@@ -154,16 +175,16 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
     },
     breadcrumbs: (data.breadcrumbs && Array.isArray(data.breadcrumbs) && data.breadcrumbs.length > 0)
       ? data.breadcrumbs
-          .filter((bc: any) => bc && bc.label && bc.label.trim())
-          .map((bc: any) => ({
-            label: bc.label.trim(),
-            href: bc.href && bc.href.trim() ? bc.href.trim() : undefined,
-          }))
+        .filter((bc: any) => bc && bc.label && bc.label.trim())
+        .map((bc: any) => ({
+          label: bc.label.trim(),
+          href: bc.href && bc.href.trim() ? bc.href.trim() : undefined,
+        }))
       : [
-          { label: "Home", href: "/" },
-          { label: "Catalog", href: "/catalog" },
-          { label: data.title || "Product" },
-        ],
+        { label: "Home", href: "/" },
+        { label: "Catalog", href: "/catalog" },
+        { label: data.title || "Product" },
+      ],
     ratingSummary: data.ratingSummary || [
       { label: "5 Star", percentage: 70 },
       { label: "4 Star", percentage: 20 },
@@ -171,16 +192,17 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
       { label: "2 Star", percentage: 0 },
       { label: "1 Star", percentage: 0 },
     ],
-    faq: data.faq 
-      ? data.faq.filter((f: any) => 
-          f && 
-          f.id && 
-          f.id.trim() && 
-          f.question && 
-          f.question.trim() &&
-          f.answer &&
-          f.answer.trim()
-        )
+    // Handle both 'faq' (singular) and 'faqs' (plural) field names from database
+    faqs: (data.faqs || data.faq)
+      ? (data.faqs || data.faq).filter((f: any) =>
+        f &&
+        f.id &&
+        f.id.trim() &&
+        f.question &&
+        f.question.trim() &&
+        f.answer &&
+        f.answer.trim()
+      )
       : [],
     displayLocations: data.displayLocations || {
       homeBestseller: false,
@@ -189,7 +211,7 @@ const parseProductDetail = (doc: QueryDocumentSnapshot<DocumentData>) => {
       accessories: false,
     },
   };
-  
+
   return ProductDetailSchema.parse(withDefaults);
 };
 
@@ -205,7 +227,7 @@ export const fetchAllProductSlugs = cache(async (): Promise<string[]> => {
 
   try {
     const db = getFirebaseAdminDb();
-    
+
     // Fetch slugs from productDetails collection (admin-created products)
     const productDetailsSnapshot = await db
       .collection(PRODUCT_DETAILS_COLLECTION)
@@ -234,7 +256,7 @@ export const fetchAllProductSlugs = cache(async (): Promise<string[]> => {
   } catch (error) {
     // Always treat as warning - this is expected during development without Firebase
     const errorMessage = error instanceof Error ? error.message : String(error);
-    
+
     if (error instanceof Error && error.message === "FIREBASE_NOT_CONFIGURED") {
       console.warn("Firebase not configured, falling back to static data");
     } else if (!errorMessage || errorMessage === '{}' || errorMessage === '[object Object]') {
@@ -257,7 +279,7 @@ const toProductDetailFallback = (product: Product): ProductDetail => {
     Math.round(
       ((product.priceEstimateMax - product.priceEstimateMin) /
         product.priceEstimateMax) *
-        100
+      100
     )
   );
 
@@ -331,415 +353,415 @@ const toProductDetailFallback = (product: Product): ProductDetail => {
     sizeOptions:
       product.category === "mattresses" || product.category === "beds"
         ? [
-            // Standard Single Sizes
-            {
-              label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 3" (7.6cm)',
-              value: "single-3",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 4" (10.2cm)',
-              value: "single-4",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 5" (12.7cm)',
-              value: "single-5",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 6" (15.2cm)',
-              value: "single-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 8" (20.3cm)',
-              value: "single-8",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 10" (25.4cm)',
-              value: "single-10",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 12" (30.5cm)',
-              value: "single-12",
-              inStock: true,
-              isDefault: false,
-            },
+          // Standard Single Sizes
+          {
+            label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 3" (7.6cm)',
+            value: "single-3",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 4" (10.2cm)',
+            value: "single-4",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 5" (12.7cm)',
+            value: "single-5",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 6" (15.2cm)',
+            value: "single-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 8" (20.3cm)',
+            value: "single-8",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 10" (25.4cm)',
+            value: "single-10",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single | 90 X 190 (0.90 m x 1.90 m) | 12" (30.5cm)',
+            value: "single-12",
+            inStock: true,
+            isDefault: false,
+          },
 
-            // Extended Single Sizes
-            {
-              label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 3" (7.6cm)',
-              value: "single-xl-3",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 4" (10.2cm)',
-              value: "single-xl-4",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 5" (12.7cm)',
-              value: "single-xl-5",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 6" (15.2cm)',
-              value: "single-xl-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 8" (20.3cm)',
-              value: "single-xl-8",
-              inStock: true,
-              isDefault: false,
-            },
+          // Extended Single Sizes
+          {
+            label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 3" (7.6cm)',
+            value: "single-xl-3",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 4" (10.2cm)',
+            value: "single-xl-4",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 5" (12.7cm)',
+            value: "single-xl-5",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 6" (15.2cm)',
+            value: "single-xl-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Single XL | 90 X 200 (0.90 m x 2.00 m) | 8" (20.3cm)',
+            value: "single-xl-8",
+            inStock: true,
+            isDefault: false,
+          },
 
-            // Double/Full Sizes
-            {
-              label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 3" (7.6cm)',
-              value: "double-3",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 4" (10.2cm)',
-              value: "double-4",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 5" (12.7cm)',
-              value: "double-5",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 6" (15.2cm)',
-              value: "double-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 8" (20.3cm)',
-              value: "double-8",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 10" (25.4cm)',
-              value: "double-10",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 12" (30.5cm)',
-              value: "double-12",
-              inStock: true,
-              isDefault: false,
-            },
+          // Double/Full Sizes
+          {
+            label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 3" (7.6cm)',
+            value: "double-3",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 4" (10.2cm)',
+            value: "double-4",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 5" (12.7cm)',
+            value: "double-5",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 6" (15.2cm)',
+            value: "double-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 8" (20.3cm)',
+            value: "double-8",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 10" (25.4cm)',
+            value: "double-10",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Double | 135 X 190 (1.35 m x 1.90 m) | 12" (30.5cm)',
+            value: "double-12",
+            inStock: true,
+            isDefault: false,
+          },
 
-            // Queen Sizes
-            {
-              label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 3" (7.6cm)',
-              value: "queen-3",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 4" (10.2cm)',
-              value: "queen-4",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 5" (12.7cm)',
-              value: "queen-5",
-              inStock: true,
-              isDefault: true,
-            },
-            {
-              label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 6" (15.2cm)',
-              value: "queen-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 8" (20.3cm)',
-              value: "queen-8",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 10" (25.4cm)',
-              value: "queen-10",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 12" (30.5cm)',
-              value: "queen-12",
-              inStock: true,
-              isDefault: false,
-            },
+          // Queen Sizes
+          {
+            label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 3" (7.6cm)',
+            value: "queen-3",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 4" (10.2cm)',
+            value: "queen-4",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 5" (12.7cm)',
+            value: "queen-5",
+            inStock: true,
+            isDefault: true,
+          },
+          {
+            label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 6" (15.2cm)',
+            value: "queen-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 8" (20.3cm)',
+            value: "queen-8",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 10" (25.4cm)',
+            value: "queen-10",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Queen | 150 X 190 (1.50 m x 1.90 m) | 12" (30.5cm)',
+            value: "queen-12",
+            inStock: true,
+            isDefault: false,
+          },
 
-            // Queen XL Sizes
-            {
-              label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 4" (10.2cm)',
-              value: "queen-xl-4",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 5" (12.7cm)',
-              value: "queen-xl-5",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 6" (15.2cm)',
-              value: "queen-xl-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 8" (20.3cm)',
-              value: "queen-xl-8",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 10" (25.4cm)',
-              value: "queen-xl-10",
-              inStock: true,
-              isDefault: false,
-            },
+          // Queen XL Sizes
+          {
+            label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 4" (10.2cm)',
+            value: "queen-xl-4",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 5" (12.7cm)',
+            value: "queen-xl-5",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 6" (15.2cm)',
+            value: "queen-xl-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 8" (20.3cm)',
+            value: "queen-xl-8",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Queen XL | 160 X 200 (1.60 m x 2.00 m) | 10" (25.4cm)',
+            value: "queen-xl-10",
+            inStock: true,
+            isDefault: false,
+          },
 
-            // King Sizes
-            {
-              label: 'King | 180 X 200 (1.80 m x 2.00 m) | 3" (7.6cm)',
-              value: "king-3",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'King | 180 X 200 (1.80 m x 2.00 m) | 4" (10.2cm)',
-              value: "king-4",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'King | 180 X 200 (1.80 m x 2.00 m) | 5" (12.7cm)',
-              value: "king-5",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'King | 180 X 200 (1.80 m x 2.00 m) | 6" (15.2cm)',
-              value: "king-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'King | 180 X 200 (1.80 m x 2.00 m) | 8" (20.3cm)',
-              value: "king-8",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'King | 180 X 200 (1.80 m x 2.00 m) | 10" (25.4cm)',
-              value: "king-10",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'King | 180 X 200 (1.80 m x 2.00 m) | 12" (30.5cm)',
-              value: "king-12",
-              inStock: true,
-              isDefault: false,
-            },
+          // King Sizes
+          {
+            label: 'King | 180 X 200 (1.80 m x 2.00 m) | 3" (7.6cm)',
+            value: "king-3",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'King | 180 X 200 (1.80 m x 2.00 m) | 4" (10.2cm)',
+            value: "king-4",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'King | 180 X 200 (1.80 m x 2.00 m) | 5" (12.7cm)',
+            value: "king-5",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'King | 180 X 200 (1.80 m x 2.00 m) | 6" (15.2cm)',
+            value: "king-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'King | 180 X 200 (1.80 m x 2.00 m) | 8" (20.3cm)',
+            value: "king-8",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'King | 180 X 200 (1.80 m x 2.00 m) | 10" (25.4cm)',
+            value: "king-10",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'King | 180 X 200 (1.80 m x 2.00 m) | 12" (30.5cm)',
+            value: "king-12",
+            inStock: true,
+            isDefault: false,
+          },
 
-            // Super King Sizes
-            {
-              label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 4" (10.2cm)',
-              value: "super-king-4",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 5" (12.7cm)',
-              value: "super-king-5",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 6" (15.2cm)',
-              value: "super-king-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 8" (20.3cm)',
-              value: "super-king-8",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 10" (25.4cm)',
-              value: "super-king-10",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 12" (30.5cm)',
-              value: "super-king-12",
-              inStock: true,
-              isDefault: false,
-            },
+          // Super King Sizes
+          {
+            label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 4" (10.2cm)',
+            value: "super-king-4",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 5" (12.7cm)',
+            value: "super-king-5",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 6" (15.2cm)',
+            value: "super-king-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 8" (20.3cm)',
+            value: "super-king-8",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 10" (25.4cm)',
+            value: "super-king-10",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Super King | 200 X 200 (2.00 m x 2.00 m) | 12" (30.5cm)',
+            value: "super-king-12",
+            inStock: true,
+            isDefault: false,
+          },
 
-            // California King Sizes
-            {
-              label:
-                'California King | 183 X 213 (1.83 m x 2.13 m) | 4" (10.2cm)',
-              value: "cal-king-4",
-              inStock: false,
-              isDefault: false,
-            },
-            {
-              label:
-                'California King | 183 X 213 (1.83 m x 2.13 m) | 5" (12.7cm)',
-              value: "cal-king-5",
-              inStock: false,
-              isDefault: false,
-            },
-            {
-              label:
-                'California King | 183 X 213 (1.83 m x 2.13 m) | 6" (15.2cm)',
-              value: "cal-king-6",
-              inStock: false,
-              isDefault: false,
-            },
-            {
-              label:
-                'California King | 183 X 213 (1.83 m x 2.13 m) | 8" (20.3cm)',
-              value: "cal-king-8",
-              inStock: false,
-              isDefault: false,
-            },
-            {
-              label:
-                'California King | 183 X 213 (1.83 m x 2.13 m) | 10" (25.4cm)',
-              value: "cal-king-10",
-              inStock: false,
-              isDefault: false,
-            },
+          // California King Sizes
+          {
+            label:
+              'California King | 183 X 213 (1.83 m x 2.13 m) | 4" (10.2cm)',
+            value: "cal-king-4",
+            inStock: false,
+            isDefault: false,
+          },
+          {
+            label:
+              'California King | 183 X 213 (1.83 m x 2.13 m) | 5" (12.7cm)',
+            value: "cal-king-5",
+            inStock: false,
+            isDefault: false,
+          },
+          {
+            label:
+              'California King | 183 X 213 (1.83 m x 2.13 m) | 6" (15.2cm)',
+            value: "cal-king-6",
+            inStock: false,
+            isDefault: false,
+          },
+          {
+            label:
+              'California King | 183 X 213 (1.83 m x 2.13 m) | 8" (20.3cm)',
+            value: "cal-king-8",
+            inStock: false,
+            isDefault: false,
+          },
+          {
+            label:
+              'California King | 183 X 213 (1.83 m x 2.13 m) | 10" (25.4cm)',
+            value: "cal-king-10",
+            inStock: false,
+            isDefault: false,
+          },
 
-            // Eastern King Sizes
-            {
-              label: 'Eastern King | 193 X 203 (1.93 m x 2.03 m) | 6" (15.2cm)',
-              value: "eastern-king-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Eastern King | 193 X 203 (1.93 m x 2.03 m) | 8" (20.3cm)',
-              value: "eastern-king-8",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label:
-                'Eastern King | 193 X 203 (1.93 m x 2.03 m) | 10" (25.4cm)',
-              value: "eastern-king-10",
-              inStock: true,
-              isDefault: false,
-            },
+          // Eastern King Sizes
+          {
+            label: 'Eastern King | 193 X 203 (1.93 m x 2.03 m) | 6" (15.2cm)',
+            value: "eastern-king-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Eastern King | 193 X 203 (1.93 m x 2.03 m) | 8" (20.3cm)',
+            value: "eastern-king-8",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label:
+              'Eastern King | 193 X 203 (1.93 m x 2.03 m) | 10" (25.4cm)',
+            value: "eastern-king-10",
+            inStock: true,
+            isDefault: false,
+          },
 
-            // Custom/European Sizes
-            {
-              label:
-                'European Single | 90 X 200 (0.90 m x 2.00 m) | 5" (12.7cm)',
-              value: "euro-single-5",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label:
-                'European Double | 140 X 200 (1.40 m x 2.00 m) | 5" (12.7cm)',
-              value: "euro-double-5",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label:
-                'European King | 160 X 200 (1.60 m x 2.00 m) | 6" (15.2cm)',
-              value: "euro-king-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label:
-                'European Super King | 180 X 200 (1.80 m x 2.00 m) | 6" (15.2cm)',
-              value: "euro-super-king-6",
-              inStock: true,
-              isDefault: false,
-            },
+          // Custom/European Sizes
+          {
+            label:
+              'European Single | 90 X 200 (0.90 m x 2.00 m) | 5" (12.7cm)',
+            value: "euro-single-5",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label:
+              'European Double | 140 X 200 (1.40 m x 2.00 m) | 5" (12.7cm)',
+            value: "euro-double-5",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label:
+              'European King | 160 X 200 (1.60 m x 2.00 m) | 6" (15.2cm)',
+            value: "euro-king-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label:
+              'European Super King | 180 X 200 (1.80 m x 2.00 m) | 6" (15.2cm)',
+            value: "euro-super-king-6",
+            inStock: true,
+            isDefault: false,
+          },
 
-            // Specialty Sizes
-            {
-              label: 'Twin | 99 X 190 (0.99 m x 1.90 m) | 4" (10.2cm)',
-              value: "twin-4",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Twin XL | 99 X 203 (0.99 m x 2.03 m) | 4" (10.2cm)',
-              value: "twin-xl-4",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label: 'Full XL | 137 X 203 (1.37 m x 2.03 m) | 5" (12.7cm)',
-              value: "full-xl-5",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label:
-                'Olympic Queen | 168 X 203 (1.68 m x 2.03 m) | 6" (15.2cm)',
-              value: "olympic-queen-6",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label:
-                'Split King | 2x 97 X 203 (0.97 m x 2.03 m each) | 8" (20.3cm)',
-              value: "split-king-8",
-              inStock: true,
-              isDefault: false,
-            },
-            {
-              label:
-                'Split California King | 2x 91 X 213 (0.91 m x 2.13 m each) | 8" (20.3cm)',
-              value: "split-cal-king-8",
-              inStock: false,
-              isDefault: false,
-            },
-          ]
+          // Specialty Sizes
+          {
+            label: 'Twin | 99 X 190 (0.99 m x 1.90 m) | 4" (10.2cm)',
+            value: "twin-4",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Twin XL | 99 X 203 (0.99 m x 2.03 m) | 4" (10.2cm)',
+            value: "twin-xl-4",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label: 'Full XL | 137 X 203 (1.37 m x 2.03 m) | 5" (12.7cm)',
+            value: "full-xl-5",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label:
+              'Olympic Queen | 168 X 203 (1.68 m x 2.03 m) | 6" (15.2cm)',
+            value: "olympic-queen-6",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label:
+              'Split King | 2x 97 X 203 (0.97 m x 2.03 m each) | 8" (20.3cm)',
+            value: "split-king-8",
+            inStock: true,
+            isDefault: false,
+          },
+          {
+            label:
+              'Split California King | 2x 91 X 213 (0.91 m x 2.13 m each) | 8" (20.3cm)',
+            value: "split-cal-king-8",
+            inStock: false,
+            isDefault: false,
+          },
+        ]
         : product.category === "sofas"
-        ? [
+          ? [
             // 1-Seater Sofas
             {
               label: "1-Seater | 90 X 85 X 85 cm | Compact",
@@ -1011,7 +1033,7 @@ const toProductDetailFallback = (product: Product): ProductDetail => {
               isDefault: false,
             },
           ]
-        : undefined,
+          : undefined,
     offers: [
       {
         title: "Bank Offer",
@@ -1202,7 +1224,7 @@ export const fetchSimilarProducts = cache(
     } catch (error) {
       // Always treat as warning when Firebase is not configured
       const errorMessage = error instanceof Error ? error.message : String(error);
-      
+
       if (
         error instanceof Error &&
         error.message === "FIREBASE_NOT_CONFIGURED"
@@ -1319,7 +1341,7 @@ export const fetchProductReviews = cache(
     } catch (error) {
       // Always treat as warning when Firebase is not configured
       const errorMessage = error instanceof Error ? error.message : String(error);
-      
+
       if (
         error instanceof Error &&
         error.message === "FIREBASE_NOT_CONFIGURED"
