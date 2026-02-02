@@ -33,7 +33,7 @@ export function middleware(request: NextRequest) {
       "font-src 'self' data: https://fonts.gstatic.com",
       "img-src 'self' data: https: blob:",
       "frame-src 'self' https://www.google.com https://*.firebaseapp.com",
-      "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com https://*.firebaseapp.com https://www.google.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com",
+      "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebase.com https://*.firebaseapp.com https://www.google.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.cloudinary.com https://res.cloudinary.com",
     ].join("; ")
   );
 
