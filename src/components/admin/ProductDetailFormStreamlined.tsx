@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, X, Upload, Loader2, Image as ImageIcon, ChevronDown, ChevronUp, DollarSign } from "lucide-react";
+import { Plus, X, Upload, Loader2, Image as ImageIcon, ChevronDown, ChevronUp, IndianRupee } from "lucide-react";
 import type { ProductDetail } from "@/models/ProductDetail";
 import {
   Select,
@@ -927,7 +927,7 @@ export function ProductDetailFormStreamlined({
                   onClick={() => toggleSizePricingExpanded(index)}
                   className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
                 >
-                  <DollarSign className="h-4 w-4" />
+                  <IndianRupee className="h-4 w-4" />
                   Size Pricing
                   {option.pricing?.mrp ? (
                     <span className="text-green-600 font-normal">

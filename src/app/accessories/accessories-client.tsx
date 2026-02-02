@@ -24,7 +24,7 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("featured");
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Filter states
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
@@ -34,31 +34,31 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
   const categories = ["Sofa Cover", "Pillow", "Pillow Cover", "Bed Cover", "Table Cover"];
   const materials = ["Cotton", "Linen", "Silk", "Polyester", "Velvet"];
   const priceRanges = [
-    { label: "Under $50", min: 0, max: 50 },
-    { label: "$50 - $100", min: 50, max: 100 },
-    { label: "$100 - $200", min: 100, max: 200 },
-    { label: "Over $200", min: 200, max: 999999 },
+    { label: "Under ₹5,000", min: 0, max: 5000 },
+    { label: "₹5,000 - ₹15,000", min: 5000, max: 15000 },
+    { label: "₹15,000 - ₹30,000", min: 15000, max: 30000 },
+    { label: "Over ₹30,000", min: 30000, max: 999999 },
   ];
 
   const filteredAndSortedProducts = initialProducts
     .filter(product => {
       const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       // Category filter
-      const matchesCategory = selectedCategories.length === 0 || 
+      const matchesCategory = selectedCategories.length === 0 ||
         selectedCategories.some(cat => product.title.toLowerCase().includes(cat.toLowerCase()));
-      
+
       // Material filter
       const matchesMaterial = selectedMaterials.length === 0 ||
-        selectedMaterials.some(material => 
+        selectedMaterials.some(material =>
           product.materials.some(m => m.toLowerCase().includes(material.toLowerCase()))
         );
-      
+
       // Price range filter
       const selectedRange = priceRanges.find(range => range.label === selectedPriceRange);
       const matchesPriceRange = !selectedRange ||
         (product.priceEstimateMin >= selectedRange.min && product.priceEstimateMax <= selectedRange.max);
-      
+
       return matchesSearch && matchesCategory && matchesMaterial && matchesPriceRange;
     })
     .sort((a, b) => {
@@ -120,9 +120,8 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Sidebar */}
         <div
-          className={`${
-            showFilters ? "block" : "hidden"
-          } lg:block w-full lg:w-64 space-y-6`}
+          className={`${showFilters ? "block" : "hidden"
+            } lg:block w-full lg:w-64 space-y-6`}
         >
           {/* Category Filter */}
           <div>
@@ -220,8 +219,8 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
           ) : (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg">
-                {initialProducts.length === 0 
-                  ? "No accessories available yet. Check back soon!" 
+                {initialProducts.length === 0
+                  ? "No accessories available yet. Check back soon!"
                   : "No accessories found matching your criteria."}
               </p>
               {selectedCategories.length > 0 || selectedMaterials.length > 0 || selectedPriceRange || searchQuery ? (
