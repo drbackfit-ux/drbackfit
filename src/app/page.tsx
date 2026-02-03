@@ -99,7 +99,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Categories Section */}
+      {/* TEMPORARILY HIDDEN - Browse by Category Section (Payment Gateway Approval)
       <section className="section-padding bg-secondary/20">
         <div className="container mx-auto">
           <div className="text-center mb-8 space-y-3">
@@ -132,6 +132,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      END TEMPORARILY HIDDEN */}
 
       {/* Featured Products */}
       <section className="section-padding">

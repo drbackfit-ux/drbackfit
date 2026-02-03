@@ -167,12 +167,12 @@ function CatalogContent() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <aside
-            className={`lg:w-64 flex-shrink-0 space-y-6 ${
-              showFilters ? "block" : "hidden lg:block"
-            }`}
+            className={`lg:w-64 flex-shrink-0 space-y-6 ${showFilters ? "block" : "hidden lg:block"
+              }`}
           >
+            {/* TEMPORARILY HIDDEN - Category, Material & Price Filters (Payment Gateway Approval) */}
             {/* Category Filter */}
-            <div className="space-y-4">
+            <div className="space-y-4" style={{ display: 'none' }}>
               <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
                 Category
               </h3>
@@ -194,7 +194,7 @@ function CatalogContent() {
             </div>
 
             {/* Material Filter */}
-            <div className="space-y-4 pt-6 border-t border-border">
+            <div className="space-y-4 pt-6 border-t border-border" style={{ display: 'none' }}>
               <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
                 Material
               </h3>
@@ -213,7 +213,7 @@ function CatalogContent() {
             </div>
 
             {/* Price Range Filter */}
-            <div className="space-y-4 pt-6 border-t border-border">
+            <div className="space-y-4 pt-6 border-t border-border" style={{ display: 'none' }}>
               <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
                 Price Range
               </h3>
@@ -234,23 +234,24 @@ function CatalogContent() {
                 </SelectContent>
               </Select>
             </div>
+            {/* END TEMPORARILY HIDDEN */}
 
             {/* Clear Filters */}
             {(selectedCategories.length > 0 ||
               selectedMaterials.length > 0 ||
               selectedPriceRange) && (
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setSelectedCategories([]);
-                  setSelectedMaterials([]);
-                  setSelectedPriceRange("");
-                }}
-                className="w-full"
-              >
-                Clear All Filters
-              </Button>
-            )}
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setSelectedCategories([]);
+                    setSelectedMaterials([]);
+                    setSelectedPriceRange("");
+                  }}
+                  className="w-full"
+                >
+                  Clear All Filters
+                </Button>
+              )}
           </aside>
 
           {/* Products Grid */}

@@ -123,8 +123,9 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
           className={`${showFilters ? "block" : "hidden"
             } lg:block w-full lg:w-64 space-y-6`}
         >
+          {/* TEMPORARILY HIDDEN - Category, Material & Price Filters (Payment Gateway Approval) */}
           {/* Category Filter */}
-          <div>
+          <div style={{ display: 'none' }}>
             <h3 className="font-semibold mb-3">Category</h3>
             <div className="space-y-2">
               {categories.map((category) => (
@@ -149,7 +150,7 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
           </div>
 
           {/* Material Filter */}
-          <div>
+          <div style={{ display: 'none' }}>
             <h3 className="font-semibold mb-3">Material</h3>
             <div className="space-y-2">
               {materials.map((material) => (
@@ -174,7 +175,7 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
           </div>
 
           {/* Price Range Filter */}
-          <div>
+          <div style={{ display: 'none' }}>
             <h3 className="font-semibold mb-3">Price Range</h3>
             <div className="space-y-2">
               {priceRanges.map((range) => (
@@ -195,6 +196,7 @@ export default function AccessoriesClient({ initialProducts }: AccessoriesClient
               ))}
             </div>
           </div>
+          {/* END TEMPORARILY HIDDEN */}
         </div>
 
         {/* Products Grid */}
