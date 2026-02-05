@@ -123,6 +123,7 @@ export default function ReturnPolicyPage() {
                                 <li>Products damaged due to misuse or negligence are not eligible for return.</li>
                                 <li>Keep all original packaging until the return window has passed.</li>
                                 <li>DrBackfit reserves the right to reject return claims without proper proof.</li>
+                                <li>Exchange and replacement will be delivered within 5-7 business days</li>
                             </ul>
                         </section>
 
