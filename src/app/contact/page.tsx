@@ -148,7 +148,7 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Address</h3>
                     <p className="text-muted-foreground">
-                      Industrial Area, Phase-2<br />
+                      Sector-1 , Madhav Puram<br />
                       Meerut, Uttar Pradesh<br />
                       250001, India
                     </p>
