@@ -186,7 +186,7 @@ export default function PrivacyPolicyPage() {
                 <p className="font-semibold text-foreground">DrBackfit</p>
                 <p className="text-sm italic">(Operated by OM.D Mattress Industries)</p>
                 <p className="mt-4">
-                  <strong>Address:</strong> Industrial Area, Phase-2, Meerut, Uttar Pradesh – 250001, India
+                  <strong>Address:</strong> Sector - 01, 883/1, Madhav Puram, Meerut, Uttar Pradesh, 250002, India
                 </p>
                 <p>
                   <strong>Phone:</strong> +91 8937905906
