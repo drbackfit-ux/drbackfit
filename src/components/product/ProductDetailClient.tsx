@@ -869,7 +869,7 @@ export function ProductDetailClient({
 
         {/* Care Instructions */}
         <div className="space-y-4 sm:space-y-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Care instructions</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Description</h2>
           <div className="rounded-lg border border-gray-200 p-4 sm:p-6">
             <p className="text-gray-600 leading-relaxed">
               {product.longDescription}
