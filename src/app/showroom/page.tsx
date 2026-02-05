@@ -177,9 +177,9 @@ export default function Showroom() {
                   <div>
                     <h4 className="font-semibold text-foreground mb-1">Location</h4>
                     <p className="text-muted-foreground">
-                      Industrial Area, Phase-2<br />
+                      Sector- 1, Madhav Puram<br />
                       Meerut, Uttar Pradesh<br />
-                      250001, India
+                      250002, India
                     </p>
                   </div>
                 </div>
