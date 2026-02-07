@@ -37,6 +37,7 @@ export const PaymentMethod = {
   CARD: "card",
   PAYPAL: "paypal",
   COD: "cod", // Cash on Delivery
+  PHONEPE: "phonepe", // PhonePe (UPI, Cards, NetBanking, Wallets)
 } as const;
 
 export type PaymentMethodType =
@@ -206,4 +207,5 @@ export const PaymentMethodSchema = z.enum([
   PaymentMethod.CARD,
   PaymentMethod.PAYPAL,
   PaymentMethod.COD,
+  PaymentMethod.PHONEPE,
 ]);

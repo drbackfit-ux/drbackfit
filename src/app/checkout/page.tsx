@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, MapPin, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, MapPin, Star, ChevronDown, ChevronUp, CreditCard, Wallet, Building2, Smartphone, Banknote } from "lucide-react";
 import { indianStates, getCitiesByState, getPinCodeByCity } from "@/data/india-locations";
 import { OrderCreateInput, calculateItemSubtotal } from "@/models/Order";
 import { PaymentMethod } from "@/models/OrderStatus";
@@ -33,6 +33,7 @@ export default function Checkout() {
   const { user, firebaseUser } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"phonepe" | "cod">("phonepe");
   const [formData, setFormData] = useState({
     email: user?.email || "",
     firstName: "",
@@ -235,7 +236,7 @@ export default function Checkout() {
         shipping: Number(shipping.toFixed(2)),
         total: Number(total.toFixed(2)),
         payment: {
-          method: PaymentMethod.COD, // Default to COD as payment gateway is not yet implemented
+          method: paymentMethod === "phonepe" ? PaymentMethod.PHONEPE : PaymentMethod.COD,
         },
       };
 
@@ -244,8 +245,32 @@ export default function Checkout() {
 
       console.log("=== Checkout: Creating Order ===");
       console.log("Order Data:", orderData);
+      console.log("Payment Method:", paymentMethod);
 
-      // Create order via API
+      // Handle PhonePe payment
+      if (paymentMethod === "phonepe") {
+        const response = await fetch("/api/payments/phonepe/initiate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ orderData }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || "Failed to initiate payment");
+        }
+
+        // Redirect to PhonePe payment page
+        toast.success("Redirecting to payment...");
+        window.location.href = data.redirectUrl;
+        return;
+      }
+
+      // Handle COD payment (existing flow)
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: {
@@ -610,6 +635,89 @@ export default function Checkout() {
                   )}
                 </div>
               </Card>
+
+              {/* Payment Method Selection */}
+              <Card className="p-6">
+                <h2 className="text-xl font-serif font-bold text-foreground mb-4">
+                  Payment Method
+                </h2>
+                <div className="space-y-3">
+                  {/* PhonePe Option */}
+                  <div
+                    onClick={() => setPaymentMethod("phonepe")}
+                    className={`border rounded-lg p-4 cursor-pointer transition-all ${paymentMethod === "phonepe"
+                      ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                      : "border-border hover:border-primary/50"
+                      }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "phonepe" ? "border-primary" : "border-muted-foreground"
+                        }`}>
+                        {paymentMethod === "phonepe" && (
+                          <div className="w-3 h-3 rounded-full bg-primary" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">Pay Online</span>
+                          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                            Recommended
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Secure payment via PhonePe
+                        </p>
+                      </div>
+                    </div>
+                    {/* Payment method icons */}
+                    <div className="flex items-center gap-3 mt-3 ml-8">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded">
+                        <Smartphone className="h-3.5 w-3.5" />
+                        <span>UPI</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded">
+                        <CreditCard className="h-3.5 w-3.5" />
+                        <span>Cards</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded">
+                        <Building2 className="h-3.5 w-3.5" />
+                        <span>Net Banking</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground bg-secondary/50 px-2 py-1 rounded">
+                        <Wallet className="h-3.5 w-3.5" />
+                        <span>Wallets</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* COD Option */}
+                  <div
+                    onClick={() => setPaymentMethod("cod")}
+                    className={`border rounded-lg p-4 cursor-pointer transition-all ${paymentMethod === "cod"
+                      ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                      : "border-border hover:border-primary/50"
+                      }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === "cod" ? "border-primary" : "border-muted-foreground"
+                        }`}>
+                        {paymentMethod === "cod" && (
+                          <div className="w-3 h-3 rounded-full bg-primary" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <Banknote className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-semibold">Cash on Delivery</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Pay when your order arrives
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
             </div>
 
             {/* Order Summary */}
@@ -667,10 +775,10 @@ export default function Checkout() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing Order...
+                      {paymentMethod === "phonepe" ? "Redirecting to Payment..." : "Processing Order..."}
                     </>
                   ) : (
-                    "Place Order"
+                    paymentMethod === "phonepe" ? "Pay Now" : "Place Order (COD)"
                   )}
                 </Button>
 
