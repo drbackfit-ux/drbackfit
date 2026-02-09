@@ -8,13 +8,15 @@ import crypto from "crypto";
 // PhonePe API endpoints - V2
 const PHONEPE_ENDPOINTS = {
     UAT: {
-        base: "https://api-preprod.phonepe.com/apis/pg-sandbox",
+        authBase: "https://api-preprod.phonepe.com/apis/identity-manager",
+        apiBase: "https://api-preprod.phonepe.com/apis/pg-sandbox",
         auth: "/v1/oauth/token",
         pay: "/checkout/v2/pay",
         status: "/checkout/v2/order",
     },
     PROD: {
-        base: "https://api.phonepe.com/apis/pg",
+        authBase: "https://api.phonepe.com/apis/identity-manager",
+        apiBase: "https://api.phonepe.com/apis/pg",
         auth: "/v1/oauth/token",
         pay: "/checkout/v2/pay",
         status: "/checkout/v2/order",
@@ -65,7 +67,7 @@ const getAccessToken = async (): Promise<string> => {
     console.log("Requesting PhonePe OAuth token...");
 
     try {
-        const response = await fetch(`${config.endpoints.base}${config.endpoints.auth}`, {
+        const response = await fetch(`${config.endpoints.authBase}${config.endpoints.auth}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
@@ -188,7 +190,7 @@ export const initiatePayment = async (
             env: config.env,
         });
 
-        const response = await fetch(`${config.endpoints.base}${config.endpoints.pay}`, {
+        const response = await fetch(`${config.endpoints.apiBase}${config.endpoints.pay}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -255,7 +257,7 @@ export const checkPaymentStatus = async (
         const accessToken = await getAccessToken();
 
         const response = await fetch(
-            `${config.endpoints.base}${config.endpoints.status}/${merchantOrderId}/status`,
+            `${config.endpoints.apiBase}${config.endpoints.status}/${merchantOrderId}/status`,
             {
                 method: "GET",
                 headers: {
