@@ -14,7 +14,7 @@ const PHONEPE_ENDPOINTS = {
         refund: "/pg/v1/refund",
     },
     PROD: {
-        base: "https://api.phonepe.com/apis/pg",
+        base: "https://api.phonepe.com/apis",
         pay: "/pg/v1/pay",
         status: "/pg/v1/status",
         refund: "/pg/v1/refund",
