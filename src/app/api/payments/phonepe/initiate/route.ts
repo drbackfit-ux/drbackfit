@@ -126,11 +126,18 @@ export async function POST(request: NextRequest) {
                 updatedAt: Timestamp.now(),
             });
 
+            console.error("PhonePe payment initiation failed:", {
+                code: paymentResponse.code,
+                message: paymentResponse.message,
+                orderId,
+            });
+
             return NextResponse.json(
                 {
                     success: false,
                     error: "Payment initiation failed",
                     message: paymentResponse.message,
+                    code: paymentResponse.code,
                 },
                 { status: 400 }
             );

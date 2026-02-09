@@ -141,7 +141,18 @@ export const initiatePayment = async (
 
     const payloadString = JSON.stringify(payload);
     const base64Payload = Buffer.from(payloadString).toString("base64");
-    const checksum = generateChecksum(payloadString, config.endpoints.pay);
+
+    // IMPORTANT: Checksum is calculated from base64Payload + endpoint + saltKey
+    const checksumString = base64Payload + config.endpoints.pay + config.saltKey;
+    const checksum = generateSha256(checksumString) + "###" + config.saltIndex;
+
+    console.log("PhonePe Payment Request:", {
+        merchantId: config.merchantId,
+        transactionId: request.orderId,
+        amount: payload.amount,
+        redirectUrl: request.redirectUrl,
+        env: config.env,
+    });
 
     try {
         const response = await fetch(`${config.endpoints.base}${config.endpoints.pay}`, {
@@ -157,6 +168,13 @@ export const initiatePayment = async (
 
         const data = await response.json();
 
+        console.log("PhonePe API Response:", {
+            success: data.success,
+            code: data.code,
+            message: data.message,
+            httpStatus: response.status,
+        });
+
         if (data.success && data.data?.instrumentResponse?.redirectInfo?.url) {
             return {
                 success: true,
@@ -167,6 +185,7 @@ export const initiatePayment = async (
             };
         }
 
+        console.error("PhonePe payment failed:", data);
         return {
             success: false,
             code: data.code || "UNKNOWN_ERROR",
